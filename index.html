@@ -321,6 +321,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h1 class="h1" id="h-welcome" tabindex="-1">Welcome</h1>
     </div>
     <div class="stack">
+      <div class="row"><button class="btn" data-listen="welcome">Listen to the welcome</button></div>
       <p class="lede">Good evening, and welcome to A Night For Vision.</p>
       <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
       <div class="panel">
@@ -333,7 +334,6 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
           <li><strong>8:30 p.m.</strong> Program ends</li>
         </ul>
       </div>
-      <div class="row"><button class="btn" data-listen="welcome">Listen to the welcome</button></div>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
         <ul class="tips">
@@ -408,8 +408,8 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <p class="story-note" id="storyNote" hidden></p>
     <section class="looks panel" id="storyLooks" aria-labelledby="looksH" hidden>
       <h2 class="h2" id="looksH"></h2>
-      <p id="looksP"></p>
       <button class="btn ghost" id="looksPlay"></button>
+      <p id="looksP"></p>
     </section>
     <div class="gallery" id="storyPics"></div>
     <div class="read" id="storyText"></div>
@@ -448,12 +448,12 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div role="tabpanel" id="pane-menu" aria-labelledby="tab-menu" data-listen-scope="menu" hidden>
       <h2 class="vh">Menu</h2>
       <div class="stack">
+        <button class="btn ghost" data-listen="program">Listen to the menu</button>
         <div class="tier"><h2 class="h2">Cocktail Hour</h2><p>Pancetta boats</p><p>Crab salad on a phyllo cup</p><p>Mini meatball in a pastry cup</p></div>
         <div class="tier"><h2 class="h2">Salad</h2><p>Spring mix, tomato, cucumber, feta cheese, and walnuts, topped with an herbal dressing</p></div>
         <div class="tier"><h2 class="h2">Entr&eacute;e</h2><p>Sliced Sterling Silver roasted tenderloin topped with a crab cake and finished with a B&eacute;arnaise sauce, accompanied by herbal roasted potatoes, grilled asparagus, and carrots</p></div>
         <div class="tier"><h2 class="h2">Dessert</h2><p>Flourless chocolate cake topped with chocolate ganache and a chocolate mousse</p></div>
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
-        <button class="btn ghost" data-listen="program">Listen to the menu</button>
       </div>
     </div>
     <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
@@ -494,17 +494,17 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div class="stack">
       <div class="give-hero stack" data-listen-scope="fundaneed">
         <h2 class="h2">Fund-A-Need</h2>
+        <button class="btn ghost" data-listen="fundaneed">Listen to Fund-A-Need</button>
         <p class="lede">Every story you hear tonight began with someone who chose to give. Your generosity ensures that Envision programs continue to grow, opening doors for the next generation.</p>
         <a class="btn wide" id="giveLink" href="#give" aria-disabled="true">Give now<span class="vh"> (opens in a new tab)</span></a>
         <p>Opens the Envision Gala giving page in a new tab. This guide stays open where you left it.</p>
-        <button class="btn ghost" data-listen="fundaneed">Listen to Fund-A-Need</button>
       </div>
       <div class="panel stack" data-listen-scope="aruba">
         <h2 class="h2">Aruba Chance Drawing</h2>
+        <button class="btn ghost" data-listen="aruba">Listen to the Aruba drawing</button>
         <p>Win seven days in Aruba. Enjoy a week of island paradise, where you can relax in the sea air and soft sands. Your package includes a two-suite luxury villa for up to six people at Marriott&rsquo;s Aruba Surf Club in Noord, plus $2,000 toward airfare. Reconnect, re-energize, and refresh.</p>
         <p>Tickets are $200 each and are sold by Envision team members carrying signs throughout the evening. Every ticket supports Envision programs for people who are blind or have low vision.</p>
         <p>The winner will be revealed at the close of Fund-A-Need. This trip is generously donated by Michael and Teri Monteferrante, and Patrick and Becky Tuttle.</p>
-        <button class="btn ghost" data-listen="aruba">Listen to the Aruba drawing</button>
       </div>
     </div>
   </section>
@@ -1006,9 +1006,12 @@ const Player = (() => {
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
         audio.src = sg.src; audio.muted = true; loading = true;
-        audio.play().then(() => { audio.pause(); audio.currentTime = 0; audio.muted = false; }).catch(() => { audio.muted = false; });
+        /* muted start inside the tap unlocks playback; on a slow load it can resolve after the real
+           start below, so only pause it if the delay has not run out and nothing else has started */
+        let unlocking = true;
+        audio.play().then(() => { if (unlocking && my === token) { audio.pause(); audio.currentTime = 0; } audio.muted = false; }).catch(() => { audio.muted = false; });
         idx = sg.a; emit();
-        setTimeout(() => { if (my === token && playing) { audio.muted = false; audio.currentTime = 0; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI]; audio.play().catch(() => { playing = false; emit(); }); } }, opts.delay);
+        setTimeout(() => { unlocking = false; if (my === token && playing) { audio.muted = false; audio.currentTime = 0; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI]; audio.play().catch(() => { playing = false; emit(); }); } }, opts.delay);
       }
       else if (cur.segs) loadSeg(0);
       else if (opts.delay) { const my = token; idx = 0; emit(); setTimeout(() => { if (my === token && playing) speakFrom(0); }, opts.delay); }
@@ -1115,9 +1118,10 @@ function openSheet(id, from){
     ? `<ol>${s.directions.map(d => `<li>${esc(d)}</li>`).join('')}</ol>`
     : '';
   $('#sheetBody').innerHTML =
-    `<p class="when-line"><strong>${esc(s.when || '')}</strong> &middot; Upstairs</p>
+    `<div class="row" style="margin-bottom:1rem"><button class="btn" id="sheetListen">Listen</button></div>
+     <p class="when-line"><strong>${esc(s.when || '')}</strong> &middot; Upstairs</p>
      <p class="lede">${esc(s.what)}</p>
-     <div class="row"><button class="btn" id="sheetListen">Listen</button>${s.extra ? '<a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a>' : ''}</div>
+     ${s.extra ? '<div class="row"><a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a></div>' : ''}
      <h3>How to get there</h3>${dir}`;
   $('#sheetListen').onclick = () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
   $('#sheetScrim').hidden = false;
