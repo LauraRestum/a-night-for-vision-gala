@@ -937,10 +937,20 @@ function sentences(text){ return (text.match(/[^.!?]+[.!?]+["'\u201d\u2019)\]]*\
 const Player = (() => {
   const synth = window.speechSynthesis;
   const audio = new Audio(); audio.preload = 'auto';
-  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0;
+  /* iOS Safari 17+: play as media so the ring/silent switch does not mute the recordings */
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
+  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
   const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
   const listeners = new Set();
   function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
+  /* only show Playing once sound is actually coming out; Loading until then */
+  audio.addEventListener('waiting', () => { if (playing && cur && cur.segs) { loading = true; emit(); } });
+  audio.addEventListener('playing', () => { if (loading) { loading = false; emit(); } });
+  audio.addEventListener('error', () => {
+    if (!cur || !cur.segs || !audio.getAttribute('src')) return;
+    token++; playing = false; loading = false; emit();
+    announce('This recording did not load. Check your connection and tap play to try again.');
+  });
   function stopAll(){ token++; try { synth && synth.cancel(); } catch(e){} audio.pause(); }
   function buildSegs(item, sents){
     if (item.segments && item.segments.length) {
@@ -963,7 +973,7 @@ const Player = (() => {
     synth.speak(u);
   }
   function loadSeg(i, at){
-    si = i; const sg = cur.segs[i];
+    si = i; const sg = cur.segs[i]; loading = true;
     audio.src = sg.src; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
     idx = sg.a; emit();
     if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
@@ -995,7 +1005,7 @@ const Player = (() => {
       idx = opts.from || 0; playing = true;
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
-        audio.src = sg.src; audio.muted = true;
+        audio.src = sg.src; audio.muted = true; loading = true;
         audio.play().then(() => { audio.pause(); audio.currentTime = 0; audio.muted = false; }).catch(() => { audio.muted = false; });
         idx = sg.a; emit();
         setTimeout(() => { if (my === token && playing) { audio.muted = false; audio.currentTime = 0; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI]; audio.play().catch(() => { playing = false; emit(); }); } }, opts.delay);
@@ -1007,7 +1017,7 @@ const Player = (() => {
     toggle(){
       if (!cur) return;
       if (playing) { playing = false; stopAll(); emit(); announce('Paused'); }
-      else { playing = true; if (cur.segs) { audio.play().catch(() => { playing = false; emit(); }); emit(); } else speakFrom(idx); }
+      else { playing = true; if (cur.segs) { if (audio.error) { const t = audio.currentTime; loadSeg(si, t); return; } audio.play().catch(() => { playing = false; emit(); }); emit(); } else speakFrom(idx); }
     },
     back(){
       if (!cur) return;
@@ -1023,7 +1033,7 @@ const Player = (() => {
       emit(); return rates[rateI];
     },
     close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
-    get state(){ return { cur, idx, playing, rate: rates[rateI] }; }
+    get state(){ return { cur, idx, playing, loading: playing && loading, rate: rates[rateI] }; }
   };
 })();
 
@@ -1033,7 +1043,7 @@ function renderMini(){
   if (!s.cur) { mini.hidden = true; return; }
   mini.hidden = false;
   $('#miniTitle').textContent = s.cur.name;
-  $('#miniSub').textContent = s.playing ? 'Playing' : 'Paused';
+  $('#miniSub').textContent = s.loading ? 'Loading' : s.playing ? 'Playing' : 'Paused';
   $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
   $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
   $('#miniRate').textContent = s.rate + '×';
