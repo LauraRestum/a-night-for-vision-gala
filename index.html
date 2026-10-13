@@ -60,6 +60,7 @@ html[data-env-underline="on"] a { text-decoration: underline !important; }
 
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
 * { box-sizing: border-box; }
+button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
 body {
   margin: 0; background: var(--stage); color: var(--ink);
@@ -1237,7 +1238,12 @@ const LB = (() => {
   const box = $('#lb'), img = $('#lbImg'), stage = $('#lbStage');
   let list = [], i = 0, sc = 1, tx = 0, ty = 0, ret = null;
   const ptrs = new Map(); let pinch0 = 0, sc0 = 1, last = null, tapT = 0;
-  function apply(){ img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`; }
+  function apply(){
+    /* keep the photo inside the frame: it can only be dragged as far as its zoomed edge */
+    const mx = Math.max(0, (img.offsetWidth * sc - stage.clientWidth) / 2), my = Math.max(0, (img.offsetHeight * sc - stage.clientHeight) / 2);
+    tx = Math.min(mx, Math.max(-mx, tx)); ty = Math.min(my, Math.max(-my, ty));
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`;
+  }
   function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
   function show(k){
     i = (k + list.length) % list.length; const im = list[i];
