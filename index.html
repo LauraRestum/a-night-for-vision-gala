@@ -340,8 +340,8 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, plus the program book</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, the program book, and a large print PDF</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description where available</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span> <span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
     </ol>
   </section>
@@ -453,6 +453,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-program" tabindex="-1">Tonight's Program</h1>
     </div>
+    <p><a class="btn ghost" href="docs/2026_Gala_Program_LargePrint.pdf" target="_blank" rel="noopener">Large print program (PDF, 16 pages)<span class="vh">, opens in a new tab</span></a></p>
     <div class="seg tablist" role="tablist" aria-label="Program sections">
       <button role="tab" id="tab-evening" aria-controls="pane-evening" aria-selected="true">The evening</button>
       <button role="tab" id="tab-menu" aria-controls="pane-menu" aria-selected="false" tabindex="-1">Menu</button>
@@ -512,7 +513,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div class="view-head">
       <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
-      <p>Tonight's five videos, in the order they play, each with an audio described version.</p>
+      <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
     <ul class="videos" id="videoList"></ul>
   </section>
@@ -943,7 +944,7 @@ const VIDEOS = [
   { title:'Program Legacy', who:'Aubree, Hashim, and Stephen, three people at different stages of life who have grown up in Envision programs.', len:'About 4 min', ad:null },
   { title:'Water Street', who:'Michael Monteferrante on the growth and renovation of Envision Wichita on Water Street.', len:'90 sec', ad:null },
   { title:"Heather's Camp", who:"A look at Heather's Camp.", len:'90 sec', ad:null },
-  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:null },
+  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:'https://www.dropbox.com/scl/fi/aq2jb1yef5oq9uham5xzg/ECDC_Adah_FullCircle_AUDIO_DESCRIBED_FINAL.mp4?rlkey=23mukxiuba4it764afrznhwds&st=ud13yhgn&dl=0' },
   { title:'Level Up', who:'A look at the Level Up program.', len:'90 sec', ad:null }
 ];
 
@@ -1337,7 +1338,7 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-tab]
 /* ============ videos ============ */
 $('#videoList').innerHTML = VIDEOS.map((v, i) =>
   `<li class="panel video-card"><h2 class="h2">${esc(v.title)}</h2>
-    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span><span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span></div>
+    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}
