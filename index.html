@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A Night For Vision</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Guest guide for A Night For Vision, the 2026 Envision Gala at the Wichita Art Museum.">
+<meta name="theme-color" content="#0A0A0A">
+<link rel="icon" href="data:,">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<script>(function(){try{
+  var p = JSON.parse(localStorage.getItem('env-gala-a11y') || '{}');
+  var r = document.documentElement;
+  r.setAttribute('lang','en');
+  r.setAttribute('data-env-theme', ['dark','light','hc'].indexOf(p.theme) > -1 ? p.theme : 'dark');
+  ['zoom','motion','underline','lines'].forEach(function(k){ if (p[k]) r.setAttribute('data-env-' + k, p[k]); });
+}catch(e){ document.documentElement.setAttribute('data-env-theme','dark'); }})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap">
+<style>
+/* Layout: one column, phone first. A black stage, the night laid out as doors in running order,
+   a fixed bottom bar (Home, Give) with a mini audio player that follows the guest everywhere. */
+:root, html[data-env-theme="dark"] {
+  --stage: #0A0A0A;          /* matte black canvas */
+  --surface: #161414;        /* raised panels */
+  --ink: #F4F1EC;            /* all text: no grey type */
+  --red: #E4002B;            /* signal red: large type, rules, buttons (4.1:1, large/UI only) */
+  --red-text: #FF4D5E;       /* red at body size (6.1:1 on stage) */
+  --on-red: #FFFFFF;
+  --line: rgba(244,241,236,0.22);
+  --focus: #FFFFFF;
+  --hl: rgba(228,0,43,0.32); /* read-along highlight */
+  --font: 'Montserrat', 'Gotham', 'Helvetica Neue', Arial, sans-serif;
+  color-scheme: dark;
+}
+html[data-env-theme="light"] {
+  --stage: #FAF8F5; --surface: #FFFFFF; --ink: #0A0A0A;
+  --red: #A62B1B; --red-text: #A62B1B; --on-red: #FFFFFF;
+  --line: rgba(10,10,10,0.2); --focus: #0A0A0A; --hl: rgba(166,43,27,0.18);
+  color-scheme: light;
+}
+html[data-env-theme="hc"] {
+  --stage: #000000; --surface: #000000; --ink: #FFFFFF;
+  --red: #FF4D5E; --red-text: #FFD400; --on-red: #000000;
+  --line: #FFFFFF; --focus: #FFD400; --hl: rgba(255,212,0,0.35);
+  color-scheme: dark;
+}
+html[data-env-zoom="2"] { font-size: 125%; }
+html[data-env-zoom="3"] { font-size: 150%; }
+html[data-env-zoom="4"] { font-size: 175%; }
+html[data-env-zoom="5"] { font-size: 200%; }
+html[data-env-lines="wide"] body { line-height: 1.9; }
+html[data-env-underline="on"] a { text-decoration: underline !important; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  margin: 0; background: var(--stage); color: var(--ink);
+  font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+.vh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.skip { position: absolute; left: 1rem; top: -100px; z-index: 300; background: var(--red); color: var(--on-red);
+  padding: .75rem 1.25rem; font-weight: 700; text-decoration: none; border-radius: 2px; }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + .75rem); }
+
+/* Header */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--stage);
+  border-bottom: 1px solid var(--line); }
+.top-in { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: .5rem;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
+.top-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.size-btn { min-width: 48px; min-height: 44px; border: 1px solid var(--line); background: transparent; border-radius: 999px; font-weight: 700; cursor: pointer; padding: 0 .75rem; }
+.size-btn:hover { border-color: var(--red); }
+.size-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.size-btn .big { font-size: 1.25em; }
+.mark { text-decoration: none; display: flex; flex-direction: column; line-height: 1.15; min-height: 44px; justify-content: center; }
+.mark b { font-weight: 300; font-size: 1.125rem; letter-spacing: .14em; text-transform: uppercase; }
+.mark span { font-size: 1rem; font-weight: 500; }
+.pill { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: .5rem 1rem;
+  min-height: 44px; font-weight: 600; cursor: pointer; }
+.pill:hover { border-color: var(--red); }
+
+/* Draft notice (remove before the gala) */
+.draft { border: 2px dashed var(--red-text); padding: .9rem 1rem; margin-top: 1.25rem; border-radius: 4px; }
+.draft p { margin: 0; }
+.todo { display: inline-block; border: 1px dashed var(--red-text); color: var(--red-text); font-weight: 600;
+  padding: .1rem .5rem; border-radius: 3px; }
+
+/* Type */
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+.display { font-weight: 300; font-size: clamp(2.4rem, 1.6rem + 6vw, 3.6rem); overflow-wrap: anywhere; line-height: 1.02; letter-spacing: -.01em; }
+.display em { font-style: normal; color: var(--red-text); }
+.h1 { font-weight: 300; font-size: clamp(2rem, 1.5rem + 3vw, 2.75rem); overflow-wrap: anywhere; line-height: 1.1; }
+.h2 { font-weight: 600; font-size: 1.25rem; }
+.kicker { font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 1rem; color: var(--red-text); }
+p { margin: 0 0 1rem; max-width: 65ch; }
+.lede { font-size: 1.1875rem; }
+.view-head { padding-block: 2rem 1.5rem; display: grid; gap: .75rem; }
+.back { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; font-weight: 600; text-decoration: none; }
+.back::before { content: "\2190"; }
+[tabindex="-1"]:focus { outline: none; }
+
+/* Home: the evening as doors */
+.hero { padding-block: 2.5rem 1.75rem; display: grid; gap: 1rem; }
+.hero .when { font-weight: 500; }
+.presented { font-weight: 500; }
+.doors { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.doors li { border-bottom: 1px solid var(--line); }
+.door { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: .75rem; align-items: center;
+  padding-block: 1.25rem; text-decoration: none; position: relative; }
+.door .n { font-weight: 300; font-size: 1.75rem; color: var(--red-text); font-variant-numeric: tabular-nums; }
+.door .t { display: block; font-weight: 600; font-size: 1.3125rem; line-height: 1.25; }
+.door .d { display: block; margin-top: .2rem; }
+.door .go { font-size: 1.5rem; transition: transform .2s; }
+.door:hover .go, .door:focus-visible .go { transform: translateX(4px); }
+.door:hover .t { color: var(--red-text); }
+
+/* Generic blocks */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; }
+.stack { display: grid; gap: 1rem; }
+.tips { list-style: none; padding: 0; margin: 0; display: grid; gap: .75rem; }
+.tips li { padding-left: 1.25rem; position: relative; }
+.tips li::before { content: ""; position: absolute; left: 0; top: .65em; width: .5rem; height: .5rem; background: var(--red); border-radius: 50%; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px;
+  padding: .75rem 1.25rem; border-radius: 999px; border: 2px solid var(--red); background: var(--red);
+  color: var(--on-red); font-weight: 700; text-decoration: none; cursor: pointer; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--red); }
+.btn[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
+.btn.wide { width: 100%; }
+.row { display: flex; flex-wrap: wrap; gap: .75rem; }
+
+/* Segmented controls / tabs */
+.seg { display: flex; gap: .5rem; flex-wrap: wrap; }
+.seg button { min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--line); background: transparent;
+  border-radius: 999px; font-weight: 600; cursor: pointer; }
+.seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--ink); color: var(--stage); border-color: var(--ink); }
+
+/* Map */
+.map-tools { display: grid; gap: .75rem; margin-bottom: 1rem; }
+.plan { position: relative; border: 1px solid var(--line); border-radius: 6px; background: var(--surface);
+  padding: 1rem; display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
+.plan .zone { border: 2px solid var(--line); border-radius: 4px; background: transparent; min-height: 6.5rem;
+  padding: .75rem; text-align: left; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; gap: .5rem; }
+.plan .zone:hover { border-color: var(--red); }
+.plan .zone .pin { width: 2rem; height: 2rem; border-radius: 50%; background: var(--red); color: var(--on-red);
+  display: grid; place-items: center; font-weight: 700; }
+.plan .zone b { font-weight: 600; }
+.plan .zone.span2 { grid-column: span 2; }
+.plan .note { grid-column: span 2; margin: 0; }
+.plan { grid-template-columns: 1fr; }
+.fp { display: grid; grid-template-columns: 1fr .9fr 1.25fr 1fr; gap: .4rem; align-items: stretch; }
+.room { border: 2px solid var(--line); background: transparent; border-radius: 4px; min-height: 7rem; padding: .5rem .4rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; text-align: center; cursor: pointer; min-width: 0; }
+.room:hover { border-color: var(--red); }
+.room b { font-weight: 600; font-size: .95rem; line-height: 1.2; overflow-wrap: anywhere; }
+.room .pin { width: 2rem; height: 2rem; border-radius: 50%; background: var(--red); color: var(--on-red); display: grid; place-items: center; font-weight: 700; }
+.r-rot { border-radius: 999px; }
+.fp-enter { grid-column: 3; text-align: center; font-weight: 600; border-top: 3px solid var(--red); padding-top: .4rem; }
+.fp-enter span::before { content: "\2191  "; }
+.r-stairs { flex-direction: row; min-height: 3.5rem; width: 100%; }
+.spots { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
+.spot { width: 100%; text-align: left; display: grid; grid-template-columns: 2.25rem 1fr; gap: .75rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; cursor: pointer; }
+.spot:hover { border-color: var(--red); }
+.spot .pin { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--red); color: var(--on-red); display: grid; place-items: center; font-weight: 700; }
+.spot b { display: block; font-size: 1.125rem; }
+.spot .when { display: block; font-weight: 600; color: var(--red-text); margin-top: .2rem; }
+
+/* Bottom sheet */
+.sheet-scrim { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.6); display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--stage); border: 1px solid var(--line); border-bottom: 0; border-radius: 14px 14px 0 0;
+  width: min(40rem, 100%); max-height: 85vh; overflow-y: auto; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  animation: rise .25s ease-out; }
+@keyframes rise { from { transform: translateY(24px); opacity: .4; } to { transform: none; opacity: 1; } }
+.sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
+.sheet-head > :first-child { min-width: 0; overflow-wrap: anywhere; }
+.x { flex-shrink: 0; }
+.x { min-width: 44px; min-height: 44px; border: 1px solid var(--line); background: transparent; border-radius: 50%; font-size: 1.25rem; cursor: pointer; }
+.sheet h3 { font-size: 1.125rem; margin: 1.25rem 0 .5rem; }
+.sheet ol { margin: 0; padding-left: 1.25rem; display: grid; gap: .4rem; }
+
+/* Stories */
+.jump { display: grid; gap: .5rem; }
+.jump label { font-weight: 600; }
+.jump-row { display: flex; gap: .5rem; }
+.jump input { flex: 1; min-width: 0; min-height: 48px; font: inherit; font-size: 1.25rem; padding: .5rem .9rem;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+.jump-msg { min-height: 1.6em; margin: 0; }
+.stories { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
+.story-card { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 1rem; align-items: center; text-decoration: none;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; }
+.story-card:hover { border-color: var(--red); }
+.story-card .num { font-weight: 300; font-size: 2rem; color: var(--red-text); text-align: center; font-variant-numeric: tabular-nums; }
+.story-card b { display: block; font-size: 1.125rem; }
+.heard { font-weight: 600; }
+.looks { margin-bottom: 1.25rem; display: grid; gap: .6rem; }
+.looks p { margin: 0; }
+.audio-tag { display: inline-flex; align-items: center; gap: .3rem; margin-top: .3rem; font-weight: 700; color: var(--red-text); }
+.audio-tag svg { width: 1.1em; height: 1.1em; }
+.story-note { border-left: 4px solid var(--red); padding: .6rem 1rem; background: var(--surface); font-weight: 600; margin: 0 0 1.25rem; }
+.gallery { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-bottom: 1.5rem; }
+.gallery figure { margin: 0; min-width: 0; }
+.gallery img { display: block; width: 100%; height: auto; border-radius: 4px; background: var(--surface); }
+.gallery figcaption { margin-top: .35rem; font-size: 1rem; }
+.zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
+.zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: .875rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
+.lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; }
+.lb-top, .lb-bot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem 1rem; color: #fff; background: #000; }
+.lb-top { padding-top: calc(.6rem + env(safe-area-inset-top, 0px)); }
+.lb-bot { padding-bottom: calc(.6rem + env(safe-area-inset-bottom, 0px)); flex-wrap: wrap; }
+.lb-stage { flex: 1; overflow: hidden; position: relative; touch-action: none; display: grid; place-items: center; }
+.lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
+.lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
+.lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
+.lb-ctrls { display: flex; gap: .5rem; }
+.story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
+.read { font-size: 1.1875rem; line-height: 1.75; }
+.read span { border-radius: 3px; transition: background .2s; }
+.read span { transition: font-size .25s ease, background .2s; }
+.read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
+.player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
+
+/* Program */
+.tablist { margin-bottom: 1.25rem; }
+.lineup { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--red); }
+.lineup li { position: relative; padding: 0 0 1.5rem 1.5rem; }
+.lineup li::before { content: ""; position: absolute; left: -8px; top: .45rem; width: 14px; height: 14px; border-radius: 50%; background: var(--stage); border: 2px solid var(--red); }
+.lineup li.video::before { background: var(--red); }
+.lineup b { display: block; font-size: 1.125rem; }
+.lineup a { font-weight: 600; }
+.tier { display: grid; gap: .25rem; padding-block: 1rem; border-bottom: 1px solid var(--line); }
+.tier h3 { font-size: 1rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--red-text); }
+.tier p { margin: 0; font-size: 1.125rem; }
+
+/* Videos */
+.videos { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+.video-card { display: grid; gap: .75rem; }
+.video-card .meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-weight: 500; }
+.badge { border: 1px solid var(--ink); border-radius: 4px; padding: 0 .4rem; font-weight: 700; }
+
+/* Give */
+.give-hero { border-top: 4px solid var(--red); padding-top: 1.25rem; }
+
+/* Bottom bar and mini player */
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100; background: var(--stage); border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom, 0px); }
+.dock-in { max-width: 40rem; margin: 0 auto; padding-inline: 1rem; }
+.mini { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
+.mini-title { min-width: 0; }
+.mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-ctrls { display: flex; gap: .4rem; }
+.icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
+.icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
+.icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; padding-block: .6rem; }
+.tabs a { min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); }
+.tabs a.give { background: var(--red); border-color: var(--red); color: var(--on-red); }
+.tabs a[aria-current="page"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Accessibility dialog */
+.a11y-scrim { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.a11y { background: var(--stage); border: 1px solid var(--line); border-radius: 8px; width: min(28rem, 100%); max-height: 90vh; overflow-y: auto; padding: 1.25rem; }
+.a11y fieldset { border: 0; padding: 0; margin: 0 0 1.25rem; }
+.a11y legend { font-weight: 700; margin-bottom: .5rem; }
+.a11y-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.linkish { background: none; border: 0; text-decoration: underline; font-weight: 600; min-height: 44px; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html[data-env-motion="reduce"] *::after { animation: none !important; transition: none !important; }
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="top-in">
+    <a class="mark" href="#home" aria-label="A Night For Vision, back to the evening">
+      <b aria-hidden="true">A Night For Vision</b>
+      <span aria-hidden="true">Envision Gala 2026</span>
+    </a>
+    <div class="top-tools">
+      <button class="size-btn" id="textDown" aria-label="Make text smaller">A<span aria-hidden="true">&minus;</span></button>
+      <button class="size-btn" id="textUp" aria-label="Make text larger"><span class="big">A</span><span aria-hidden="true">+</span></button>
+      <button class="pill" id="a11yOpen" aria-haspopup="dialog">Accessibility</button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap" tabindex="-1">
+
+  <!-- HOME -->
+  <section data-view="home" aria-labelledby="h-home">
+    <div class="hero">
+      <h1 class="display" id="h-home" tabindex="-1">A Night<br>For <em>Vision</em></h1>
+      <p class="when">Saturday, October 24th, 2026 &middot; Wichita Art Museum</p>
+      <p class="presented">Presented by HighTouch Technologies</p>
+    </div>
+    <h2 class="vh">Your evening</h2>
+    <ol class="doors">
+      <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span><span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span><span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span><span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span><span class="d">The evening in order, plus the program book</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span><span class="d">Tonight's five videos, with audio description</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span><span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+    </ol>
+  </section>
+
+  <!-- WELCOME -->
+  <section data-view="welcome" aria-labelledby="h-welcome" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-welcome" tabindex="-1">Welcome</h1>
+    </div>
+    <div class="stack">
+      <p class="lede">Good evening, and welcome to A Night For Vision.</p>
+      <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
+      <div class="panel">
+        <h2 class="h2" style="margin-bottom:.75rem">Tonight at a glance</h2>
+        <ul class="tips">
+          <li><strong>5:30 p.m.</strong> Check in, cocktails, and experiences</li>
+          <li><strong>6:30 p.m.</strong> Welcome and the Spirit of Philanthropy Award</li>
+          <li><strong>7:00 p.m.</strong> Dinner</li>
+          <li><strong>7:30 p.m.</strong> Fund-A-Need and the chance drawing winner</li>
+          <li><strong>8:30 p.m.</strong> Program ends</li>
+        </ul>
+      </div>
+      <div class="row"><button class="btn" data-listen="welcome">Listen to the welcome</button></div>
+      <div class="panel">
+        <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
+        <ul class="tips">
+          <li>This guide is yours to explore at your own pace. Wander through the evening in any order you like, and your place will be waiting whenever you return.</li>
+          <li>Every page can be read aloud. Simply select Listen.</li>
+          <li>Nothing will play until you choose, and you may pause at any time from the player at the bottom of your screen.</li>
+          <li>To adjust the size of the text, use the A buttons at the top of the screen. You can also pinch to zoom.</li>
+          <li>For colors and spacing, select Accessibility.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h2 class="h2" style="margin-bottom:.75rem">Tonight's featured guests</h2>
+        <p>Throughout the evening, you will meet Aubree, Adah, Hashim, and Stephen, and hear from Envision program participants and employees whose stories reflect what is possible. Together, they are shaping what comes next.</p>
+        <a class="btn ghost" href="#watch">Watch their stories</a>
+      </div>
+      <p>Dinner this evening is prepared by Scotch &amp; Sirloin, with drinks by Blue Moon.</p>
+      <p>We are so glad you are here. Enjoy your evening.</p>
+    </div>
+  </section>
+
+  <!-- MAP -->
+  <section data-view="map" aria-labelledby="h-map" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-map" tabindex="-1">Explore the Museum</h1>
+      <p>Check in downstairs, then head up the stairs into the Great Hall. Everything this evening is on that one floor: the Rotunda and Beren Room to the left, the Upper Gallery to the right. Choose a spot to see what's there and how to get to it.</p>
+    </div>
+    <div class="map-tools">
+      <div class="seg" role="group" aria-label="Show as">
+        <button data-mapmode="list" aria-pressed="true">List</button>
+        <button data-mapmode="plan" aria-pressed="false">Map</button>
+      </div>
+    </div>
+    <div id="mapList"><ul class="spots" id="spotList"></ul></div>
+    <div id="mapPlan" hidden>
+      <div class="plan" id="planGrid"></div>
+    </div>
+  </section>
+
+  <!-- STORIES LIST -->
+  <section data-view="stories" aria-labelledby="h-stories" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-stories" tabindex="-1">Through My Eyes</h1>
+      <p>Real life stories from Envision program participants, shared on the banners around the Rotunda. Select a name to listen as you stand before their banner.</p>
+    </div>
+    <div class="stack">
+      <form class="jump" id="jumpForm" novalidate hidden>
+        <label for="jumpNum">Go to story number</label>
+        <div class="jump-row">
+          <input id="jumpNum" name="jumpNum" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="jumpMsg">
+          <button class="btn" type="submit">Go</button>
+        </div>
+        <p class="jump-msg" id="jumpMsg" role="status" aria-live="polite"></p>
+      </form>
+      <div class="row"><button class="btn" id="playAll">Play all stories</button></div>
+      <ul class="stories" id="storyList"></ul>
+    </div>
+  </section>
+
+  <!-- STORY DETAIL -->
+  <section data-view="story" aria-labelledby="h-story" hidden>
+    <div class="view-head">
+      <a class="back" href="#stories">All stories</a>
+      <p class="kicker" id="storyKicker"></p>
+      <h1 class="h1" id="h-story" tabindex="-1"></h1>
+    </div>
+    <div class="player-big">
+      <button class="btn" id="storyPlay">Play</button>
+      <button class="btn ghost" id="storyNext">Next story</button>
+    </div>
+    <p class="story-note" id="storyNote" hidden></p>
+    <section class="looks panel" id="storyLooks" aria-labelledby="looksH" hidden>
+      <h2 class="h2" id="looksH"></h2>
+      <p id="looksP"></p>
+      <button class="btn ghost" id="looksPlay"></button>
+    </section>
+    <div class="gallery" id="storyPics"></div>
+    <div class="read" id="storyText"></div>
+  </section>
+
+  <!-- PROGRAM -->
+  <section data-view="program" aria-labelledby="h-program" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-program" tabindex="-1">Tonight's Program</h1>
+    </div>
+    <div class="seg tablist" role="tablist" aria-label="Program sections">
+      <button role="tab" id="tab-evening" aria-controls="pane-evening" aria-selected="true">The evening</button>
+      <button role="tab" id="tab-menu" aria-controls="pane-menu" aria-selected="false" tabindex="-1">Menu</button>
+      <button role="tab" id="tab-book" aria-controls="pane-book" aria-selected="false" tabindex="-1">Program book</button>
+    </div>
+    <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
+      <h2 class="vh">Tonight's Program</h2>
+      <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
+            <ol class="lineup">
+        <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b>Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
+        <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b>Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
+        <li><b>National Anthem</b>Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
+        <li><b>Spirit of Philanthropy Award</b>Presented to 6 Meridian</li>
+        <li><b>7:00 p.m. &middot; Dinner</b>Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
+        <li class="video"><b>Program Legacy</b>A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description</a></li>
+        <li><b>7:30 p.m. &middot; Fund-A-Need</b>Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
+        <li class="video"><b>Water Street</b><a href="#watch">Watch with audio description</a></li>
+        <li class="video"><b>Heather's Camp</b><a href="#watch">Watch with audio description</a></li>
+        <li class="video"><b>Cathy G. Hudson Envision Child Development Center</b><a href="#watch">Watch with audio description</a></li>
+        <li class="video"><b>Level Up</b><a href="#watch">Watch with audio description</a></li>
+        <li><b>Chance Drawing Winner</b>Announced at the close of Fund-A-Need</li>
+        <li><b>8:30 p.m. &middot; Program Ends</b>Thank you for joining us.</li>
+      </ol>
+    </div>
+    <div role="tabpanel" id="pane-menu" aria-labelledby="tab-menu" data-listen-scope="menu" hidden>
+      <h2 class="vh">Menu</h2>
+      <div class="stack">
+        <div class="tier"><h2 class="h2">Cocktail Hour</h2><p>Pancetta boats</p><p>Crab salad on a phyllo cup</p><p>Mini meatball in a pastry cup</p></div>
+        <div class="tier"><h2 class="h2">Salad</h2><p>Spring mix, tomato, cucumber, feta cheese, and walnuts, topped with an herbal dressing</p></div>
+        <div class="tier"><h2 class="h2">Entr&eacute;e</h2><p>Sliced Sterling Silver roasted tenderloin topped with a crab cake and finished with a B&eacute;arnaise sauce, accompanied by herbal roasted potatoes, grilled asparagus, and carrots</p></div>
+        <div class="tier"><h2 class="h2">Dessert</h2><p>Flourless chocolate cake topped with chocolate ganache and a chocolate mousse</p></div>
+        <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
+        <button class="btn ghost" data-listen="program">Listen to the menu</button>
+      </div>
+    </div>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+      <div class="stack">
+        <section aria-labelledby="h-sponsors">
+          <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
+          <div class="tier"><h3>Presenting</h3><p>HighTouch Technologies</p></div>
+          <div class="tier"><h3>Corporate</h3><p>Allen Exploration &middot; SPR &middot; LC Industries Foundation</p></div>
+          <div class="tier"><h3>Platinum</h3><p>Forvis Mazars</p></div>
+          <div class="tier"><h3>Diamond</h3><p>6 Meridian &middot; Summit Films &middot; IMA &middot; Hutton</p></div>
+          <div class="tier"><h3>Gold</h3><p>INTRUST Bank</p></div>
+          <div class="tier"><h3>Silver</h3><p>ADS &middot; Corza Medical &middot; ARSI &middot; EBY &middot; Belleville &middot; Enza Financial &middot; Vornado &middot; Massif &middot; Novolex</p></div>
+        </section>
+        <section aria-labelledby="h-thanks">
+          <h2 class="h2" id="h-thanks">With gratitude</h2>
+          <p>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon. Tactile art by the Envision Arts Program. The assistive technology experience is presented by the Bicknell Envision Vision Rehabilitation Center and Gigi &amp; Carl Allen Envision Research Institute team. Live music by Luke Schreiber.</p>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- WATCH -->
+  <section data-view="watch" aria-labelledby="h-watch" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
+      <p>Tonight's five videos, in the order they play, each with an audio described version.</p>
+    </div>
+    <ul class="videos" id="videoList"></ul>
+  </section>
+
+  <!-- GIVE -->
+  <section data-view="give" aria-labelledby="h-give" hidden>
+    <div class="view-head">
+      <a class="back" href="#home">The evening</a>
+      <h1 class="h1" id="h-give" tabindex="-1">Give</h1>
+    </div>
+    <div class="stack">
+      <div class="give-hero stack" data-listen-scope="fundaneed">
+        <h2 class="h2">Fund-A-Need</h2>
+        <p class="lede">Every story you hear tonight began with someone who chose to give. Your generosity ensures that Envision programs continue to grow, opening doors for the next generation.</p>
+        <a class="btn wide" id="giveLink" href="#give" aria-disabled="true">Give now<span class="vh"> (opens in a new tab)</span></a>
+        <p>Opens the Envision Gala giving page in a new tab. This guide stays open where you left it.</p>
+        <button class="btn ghost" data-listen="fundaneed">Listen to Fund-A-Need</button>
+      </div>
+      <div class="panel stack" data-listen-scope="aruba">
+        <h2 class="h2">Aruba Chance Drawing</h2>
+        <p>Win seven days in Aruba. Enjoy a week of island paradise, where you can relax in the sea air and soft sands. Your package includes a two-suite luxury villa for up to six people at Marriott&rsquo;s Aruba Surf Club in Noord, plus $2,000 toward airfare. Reconnect, re-energize, and refresh.</p>
+        <p>Tickets are $200 each and are sold by Envision team members carrying signs throughout the evening. Every ticket supports Envision programs for people who are blind or have low vision.</p>
+        <p>The winner will be revealed at the close of Fund-A-Need. This trip is generously donated by Michael and Teri Monteferrante, and Patrick and Becky Tuttle.</p>
+        <button class="btn ghost" data-listen="aruba">Listen to the Aruba drawing</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="dock">
+  <div class="dock-in">
+    <div class="mini" id="mini" hidden>
+      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span id="miniSub"></span></div>
+      <div class="mini-ctrls">
+        <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
+        <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+        <button class="icon-btn" id="miniRate" aria-label="Reading speed 1 times">1&times;</button>
+        <button class="icon-btn" id="miniClose" aria-label="Stop and close player">&times;</button>
+      </div>
+    </div>
+    <nav class="tabs" aria-label="Always available">
+      <a href="#home" id="navHome">Home</a>
+      <a href="#give" class="give" id="navGive">Give</a>
+    </nav>
+  </div>
+</div>
+
+<!-- Map spot sheet -->
+<div class="sheet-scrim" id="sheetScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheet">
+    <div class="sheet-head">
+      <h2 class="h1" id="sheetTitle" tabindex="-1" style="font-size:1.75rem"></h2>
+      <button class="x" id="sheetClose" aria-label="Close">&times;</button>
+    </div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<!-- Accessibility dialog -->
+<div class="a11y-scrim" id="a11yScrim" hidden>
+  <div class="a11y" role="dialog" aria-modal="true" aria-labelledby="a11yTitle">
+    <div class="sheet-head">
+      <h2 class="h2" id="a11yTitle">Accessibility</h2>
+      <button class="x" data-a11y-close aria-label="Close accessibility options">&times;</button>
+    </div>
+    <fieldset><legend>Colors</legend><div class="seg">
+      <button data-set="theme" data-val="dark">Dark</button>
+      <button data-set="theme" data-val="light">Light</button>
+      <button data-set="theme" data-val="hc">High contrast</button>
+    </div></fieldset>
+    <fieldset><legend>Text size</legend><div class="seg">
+      <button data-set="zoom" data-val="1">100%</button>
+      <button data-set="zoom" data-val="2">125%</button>
+      <button data-set="zoom" data-val="3">150%</button>
+      <button data-set="zoom" data-val="4">175%</button>
+      <button data-set="zoom" data-val="5">200%</button>
+    </div></fieldset>
+    <fieldset><legend>Reading</legend><div class="seg">
+      <button data-toggle="lines" data-on="wide">Wide line spacing</button>
+      <button data-toggle="underline">Underline links</button>
+      <button data-toggle="motion" data-on="reduce">Reduce motion</button>
+    </div></fieldset>
+    <div class="a11y-foot">
+      <button class="linkish" id="a11yReset">Reset all</button>
+      <button class="btn" data-a11y-close>Done</button>
+    </div>
+  </div>
+</div>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbCap" hidden>
+  <div class="lb-top"><span id="lbCount" aria-hidden="true"></span><button id="lbClose" aria-label="Close photo">&times;</button></div>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div>
+  <div class="lb-bot">
+    <p class="lb-cap" id="lbCap"></p>
+    <div class="lb-ctrls">
+      <button id="lbPrev" aria-label="Previous photo">&#8249;</button>
+      <button id="lbOut" aria-label="Zoom out">&minus;</button>
+      <button id="lbIn" aria-label="Zoom in">+</button>
+      <button id="lbNext" aria-label="Next photo">&#8250;</button>
+    </div>
+  </div>
+</div>
+<div class="vh" role="status" aria-live="polite" id="live"></div>
+
+<script>
+/* ============ CONTENT (edit here) ============ */
+const SPOTS = [
+  { id:'rotunda', when:'Opens at 5:30 p.m.', n:2, floor:'upper', name:'Rotunda', short:'Live music, Through My Eyes, and restrooms',
+    what:'Welcome to the Rotunda. At the center of the room, Luke Schreiber performs live. Lining the edge of the Rotunda, seven-foot banners share Through My Eyes, the real life stories of Envision program participants. Select Through My Eyes in this guide to listen as you read. At the back of the Rotunda, you will find the entrance to the Beren Room. Restrooms are also located here in the Rotunda.',
+    audio:'audio/02-rotunda.mp3', extra:'Through My Eyes', directions:['Go up the stairs into the Great Hall.', 'Turn left. The Rotunda is next to the Great Hall.', 'The restrooms are in the Rotunda, near the entrance to the Beren Room.'] },
+  { id:'beren', when:'Opens at 5:30 p.m.', n:1, floor:'upper', name:'Beren Room', short:'Meta glasses, tactile art, and open bar',
+    what:'This evening, the Beren Room is home to two experiences. Step into the future of assistive technology with Meta glasses, presented by the Bicknell Envision Vision Rehabilitation Center and Gigi & Carl Allen Envision Research Institute team. Then discover a tactile art collection created by the Envision Arts Program. These works are meant to be experienced by touch, so we invite you to reach out and explore. Enjoy premier cocktails and refreshments at the open bar here as well.',
+    audio:'audio/03-beren-room.mp3', directions:['Go up the stairs into the Great Hall.', 'Turn left and walk through the Rotunda.', 'The Beren Room entrance is at the back of the Rotunda.'] },
+  { id:'upper', when:'Opens at 5:30 p.m.', n:4, floor:'upper', name:'Upper Gallery', short:'Photo booth and open bar, upstairs to the right',
+    what:'Make your way upstairs to the Upper Gallery. Once upstairs, you will find it to your right. Capture a memory from this evening in our photo booth. Enjoy premier cocktails and refreshments at the open bar here as well.',
+    audio:'audio/04-upper-gallery.mp3', directions:['Go up the stairs into the Great Hall.', 'Turn right. The Upper Gallery is just past the Great Hall.'] },
+  { id:'dinner', when:'Open bar from 5:30 p.m. Program 6:30 to 8:30 p.m.', n:3, floor:'upper', name:'Great Hall', short:'Dinner, the evening program, chance drawing, open bar, and elevator',
+    what:'Join us upstairs for dinner prepared by Scotch & Sirloin, followed by this evening\'s program and Fund-A-Need, our moment to come together in support of Envision\'s work. Once upstairs, continue straight ahead. The program begins at 6:30 p.m., dinner is served at 7:00 p.m., Fund-A-Need begins at 7:30 p.m., and the evening concludes at 8:30 p.m. During cocktail hour, from 5:30 to 6:30 p.m., passed appetizers include pancetta boats, crab salad on a phyllo cup, and mini meatballs in pastry cups. Dinner begins with a spring mix salad with tomato, cucumber, feta cheese, and walnuts, topped with an herbal dressing. The entr\u00e9e is sliced Sterling Silver roasted tenderloin topped with a crab cake and finished with a B\u00e9arnaise sauce, accompanied by herbal roasted potatoes, grilled asparagus, and carrots. For dessert, enjoy a flourless chocolate cake topped with chocolate ganache and a chocolate mousse.',
+    audio:'audio/05-dinner-and-program.mp3', directions:['Go up the stairs.', 'At the top, you are in the Great Hall. Dinner is straight ahead.', 'The elevator is on the left side of the Great Hall.'] },
+  { id:'stairs', when:'Opens at 5:30 p.m.', n:5, floor:'upper', name:'Bottom of the Stairs', short:'Photo booth',
+    what:'At the foot of the stairs, step into our photo booth and capture a memory from this evening.',
+    audio:null, directions:['The photo booth is at the bottom of the stairs, before you head up to the Great Hall.'] }
+];
+
+const STORIES = [
+ {
+  "n": 0,
+  "name": "About Through My Eyes",
+  "hook": "Start here: how this works",
+  "audio": "audio/06-through-my-eyes-intro.mp3",
+  "timings": null,
+  "text": "Welcome to Through My Eyes. Lining the edge of the Rotunda, seven-foot banners share the real life stories of Envision program participants, including tonight's featured guests.\n\nSelect a name in this guide to listen as you stand before their banner, or choose Play all to hear each story in turn. You are welcome to keep listening as you move through the museum. As each story is read, its words will appear on your screen. Each story is told in the storyteller’s own words, read by a narrator.\n\nEach banner also shows a photo of its storyteller beside a second version of that photo, changed to give a general sense of how they see the world. These images are estimates, not exact representations of anyone’s vision."
+ },
+ {
+  "n": 1,
+  "name": "Aubree",
+  "hook": "Growing Into Her Confidence",
+  "audio": "audio/story-1-aubree.mp3",
+  "timings": null,
+  "text": "Growing Into Her Confidence. Aubree.\n\nI have Leber’s Congenital Amaurosis (LCA), a rare inherited eye disease that affects the retina from birth. I can see shapes and outlines, but I can’t see colors or details.\n\nI first found Envision when I was eight years old, and Heather’s Camp was the first program I attended. I kept coming back because it feels like a regular summer camp, but everything is already made accessible for us. I can just participate without having to worry about asking for something to be changed.\n\nWhen I was younger, I was really shy and didn’t always want to try new things. Being part of Envision programs has helped me become more independent and more willing to try things outside my comfort zone.\n\nWhen I attended Level Up for the first time, one of my favorite experiences was learning about theater production. I had always been interested in theater, but seeing what goes into putting on a show made me want to try it myself. Afterward, I signed up for a role in my school’s production of Sister Act.\n\nLevel Up also got me thinking more about different careers and things I might want to do when I’m older. I’ve thought about becoming a teacher for students with visual impairments or maybe even an author.\n\nEnvision gives me a chance to be around other kids who understand some of the same things I do, try new things and see how much more I can do on my own.\n\nHer parents also said they noticed a difference after Level Up. Aubree became more interested in different careers, got involved in her school musical and signed up for student council.\n\nAbout the photos. Aubree stands smiling in a white blouse and denim shorts, holding her white cane. Beside it is a second version of the photo, a general estimate of how Aubree sees the world around her. She can make out shapes and outlines, but not colors or fine detail. Leber’s Congenital Amaurosis (LCA) is a rare inherited disease of the retina, present from birth, that causes vision loss ranging from very poor vision to blindness. It is experienced differently by each person.\n\nBelow, a younger Aubree smiles with her white cane, and a group of campers gathers together outdoors at camp.",
+  "images": [
+   {
+    "src": "img/aubree-photo.jpg",
+    "alt": "Aubree smiling, holding her white cane",
+    "cap": ""
+   },
+   {
+    "src": "img/aubree-vision.jpg",
+    "alt": "A general estimate of how Aubree sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/aubree-b1.jpg",
+    "alt": "A younger Aubree with her white cane",
+    "cap": ""
+   },
+   {
+    "src": "img/aubree-b2.jpg",
+    "alt": "Aubree with campers at camp",
+    "cap": ""
+   }
+  ],
+  "looks": "Aubree is a 13-year-old girl with a slim build, light skin, and straight brown hair cut just above her shoulders. Her face is bright and open, with her head tilted slightly upward and a wide, joyful smile that shows her teeth, as if she is mid-laugh. She wears a white short-sleeved peasant blouse with soft gathered sleeves, a delicate gold necklace, and frayed denim shorts. She stands against a plain cream wall, holding her white cane with a red tip upright at her side.",
+  "looksAudio": "audio/desc-aubree.mp3"
+ },
+ {
+  "n": 2,
+  "name": "Adah",
+  "hook": "Growing Up With Envision",
+  "audio": "audio/story-2-adah.mp3",
+  "timings": null,
+  "text": "Growing Up With Envision. Adah.\n\nI started at the Envision Child Development Center when I was about two and a half. At the time, my mom was even considering moving our family to Topeka so I could get the services I needed. Finding ECDC meant we could stay in Wichita, and my mom could keep working while I got support here.\n\nI have optic nerve hypoplasia and nystagmus, and when I was little, I needed extra help with things like fine motor skills and learning how to do things on my own. ECDC worked with the Envision Low Vision Clinic so I could get occupational therapy while I was here. Mrs. Teresa and the other people around me helped me become more independent and confident as I got older.\n\nEnvision continued to be part of my life through Heather’s Camp, Level Up, Envision Arts and other programs. I’ve gotten to try a lot of things and meet people who understand some of the same experiences I have.\n\nThis summer, I got to come back to ECDC as a volunteer intern to get real-world job experience. I helped with the kids, activities and things around the classroom. I had never really thought much about working with kids before, but it showed me that it was something I could do.\n\nIt’s kind of crazy to be back in the same place where I started when I was two. It means a lot to come back and help kids who are where I used to be.\n\nAbout the photos. Adah stands smiling outdoors in front of playground equipment, wearing a white T-shirt and khaki pants. Beside it is a second version of the photo, a general estimate of how Adah sees the world around her. Optic nerve hypoplasia is a condition in which the optic nerve does not fully develop before birth, affecting how visual information reaches the brain. Nystagmus causes involuntary eye movement that further reduces clarity. It is experienced differently by each person.\n\nBelow, a very young Adah walks down a school hallway with her white cane, in her first years at ECDC. Beside it, Adah sits outdoors with another camper at Heather’s Camp 2026.",
+  "images": [
+   {
+    "src": "img/adah-photo.jpg",
+    "alt": "Adah standing outdoors by a playground",
+    "cap": ""
+   },
+   {
+    "src": "img/adah-vision.jpg",
+    "alt": "A general estimate of how Adah sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/adah-b1.jpg",
+    "alt": "Young Adah walking with her white cane in a school hallway",
+    "cap": "Adah in her first years at ECDC"
+   },
+   {
+    "src": "img/adah-b2.jpg",
+    "alt": "Adah sitting outdoors with another camper",
+    "cap": "Heather’s Camp 2026"
+   }
+  ],
+  "looks": "Adah is a teenage girl with light brown skin and dark brown curly hair that falls in loose ringlets past her shoulders. She has round cheeks and a soft, closed-mouth smile, and she gazes upward and off to the side as if thinking of something happy. She wears a plain cream crew-neck T-shirt tucked into high-waisted tan pants. Behind her is a playground, with a curving green tube slide and a tan metal railing.",
+  "looksAudio": "audio/desc-adah.mp3"
+ },
+ {
+  "n": 3,
+  "name": "Hashim",
+  "note": "Hashim is singing the national anthem tonight during the evening program.",
+  "hook": "Mentoring the Kid I Used to Be",
+  "audio": "audio/story-3-hashim.mp3",
+  "timings": null,
+  "text": "Mentoring the Kid I Used to Be. Hashim.\n\nI have retinal detachment with aphakia. My vision is pretty unique, and it fluctuates through the day. Out of my left eye, it’s like looking through a foggy window. One minute I can see something in the corner, the next I can’t. Out of my right eye I have very limited light perception.\n\nI came to Envision when I was 11 and started in the arts program. There were only four or five other students back then. I was losing a lot of my sight at that time, and losing a lot of my favorite hobbies with it. Sketching, drawing, anything visual. My instructor pushed me to find creativity anyway. We worked with clay, photography, videography and spray painting, and through that I was able to find myself.\n\nThen came the summer programs. AT Camp, which is Level Up now, and Heather’s Camp. What I remember most is the friendships. I was thinking about my blindness constantly, but at camp I was just a regular person. One of my closest friends came from the same cultural background I did, and we got to teach the rest of our friends our home language.\n\nWhat Envision taught me was self-advocacy. Being comfortable and confident enough to say I can do something and I will do it. That is what got me into organizations and leadership roles in college.\n\nThey asked me to mentor at the elementary level of Level Up while I was still in high school. I was nervous at first, but as soon as I started working with the mentees I realized teaching is something I love. Every year I watch kids walk in anxious on the first day and leave confident by the end of the week. It took me years to get there. I just graduated from Wichita State, and I hope to keep doing this kind of work, here or internationally.\n\nAbout the photos. Hashim stands in a gray button-up shirt and dark pants. Beside it are two more versions of the photo, labeled left eye and right eye, a general estimate of how Hashim sees the world around him. Retinal detachment separates the retina from the tissue that supplies it, and aphakia is the absence of the eye’s lens. His vision fluctuates through the day. It is experienced differently by each person.\n\nBelow, Hashim smiles while holding a guitar, and stands with a group on a stage lit in purple.",
+  "images": [
+   {
+    "src": "img/hashim-photo.jpg",
+    "alt": "Hashim standing in a gray shirt",
+    "cap": ""
+   },
+   {
+    "src": "img/hashim-vision.jpg",
+    "alt": "A general estimate of how Hashim sees the same photo, left eye and right eye",
+    "cap": ""
+   },
+   {
+    "src": "img/hashim-b1.jpg",
+    "alt": "Hashim holding a guitar",
+    "cap": ""
+   },
+   {
+    "src": "img/hashim-b2.jpg",
+    "alt": "Hashim with a group on a stage",
+    "cap": ""
+   }
+  ],
+  "looks": "Hashim is a young man in his early twenties with a slim build and light brown skin. He has thick, dark, wavy hair swept up and back, dark eyebrows, a neatly trimmed mustache and beard, and round clear-framed glasses. His expression is calm and confident, with a slight closed-mouth smile. He wears a fitted gray button-up shirt tucked into black pants with a black belt and black dress shoes. He stands relaxed against a smooth gray wall, hands in his pockets.",
+  "looksAudio": "audio/desc-hashim.mp3"
+ },
+ {
+  "n": 4,
+  "name": "Stephen",
+  "hook": "From Camper to Confidence Builder",
+  "audio": "audio/story-4-stephen.mp3",
+  "timings": null,
+  "text": "From Camper to Confidence Builder. Stephen.\n\nI was born with optic nerve hypoplasia. I can see things up close and read large print if I hold it near me. Outside, I can see trees and tell whether the grass is green or brown, but I couldn’t tell you if there were birds in the trees.\n\nI started attending Envision youth summer programs in the mid-1990s. When Heather’s Camp began, I went as a camper. I watched the counselors volunteer their time and thought, “That’s something I could do when I’m too old to be a camper.”\n\nI’ve returned as a counselor ever since. Being a mentor means helping campers have a good time, building their confidence, and encouraging them to try things they’re afraid to do. You meet kids when they’re six or seven, watch them come out of their shells, and see them grow into confident young people.\n\nSome of the same people who supported me at camp also guided me through high school and helped me find a job at Envision. I started on September 6th, 2005, right out of high school, and I work as a bag folder picker.\n\nThese programs taught me to push myself beyond what I thought I could do. They helped shape the person I am today and showed me how powerful it is to help others grow. Twenty-five years from now, I hope Heather’s Camp is still going strong.\n\nAbout the photos. Stephen smiles at camp in a red Heather’s Camp T-shirt and a wide-brimmed hat, with campers sitting behind him. Beside it is a second version of the photo, a general estimate of how Stephen sees the world around him. Optic nerve hypoplasia is a condition in which the optic nerve does not fully develop before birth, affecting how visual information reaches the brain. It is experienced differently by each person.\n\nBelow, a close portrait of Stephen smiling, and Stephen with a group in bright vests at an outdoor event.",
+  "images": [
+   {
+    "src": "img/stephen-photo.jpg",
+    "alt": "Stephen at camp in a red Heather’s Camp shirt",
+    "cap": ""
+   },
+   {
+    "src": "img/stephen-vision.jpg",
+    "alt": "A general estimate of how Stephen sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/stephen-b1.jpg",
+    "alt": "Portrait of Stephen",
+    "cap": ""
+   },
+   {
+    "src": "img/stephen-b2.jpg",
+    "alt": "Stephen with a group at an outdoor event",
+    "cap": ""
+   }
+  ],
+  "looks": "Stephen is a man in his forties with light skin, a round face, and a gentle smile. He wears a tan wide-brimmed bucket hat that shades his face, a bright red Heather’s Camp T-shirt with a sunburst design, a black lanyard holding a white name badge and a whistle, a black sport watch, and gray cargo shorts. He stands on the stone steps of an outdoor amphitheater at sunset, with campers in T-shirts and sneakers sitting on the steps behind him.",
+  "looksAudio": "audio/desc-stephen.mp3"
+ },
+ {
+  "n": 5,
+  "name": "Emma",
+  "hook": "Full of Joy, Full of Emma",
+  "audio": "audio/story-5-emma.mp3",
+  "timings": null,
+  "text": "Full of Joy, Full of Emma.\n\nI was diagnosed with Optic Nerve Hypoplasia (ONH) at six months old. My vision has changed throughout my childhood. In my early childhood, my vision was blurry at the top and clear on the bottom. Now the bottom half of my vision is blurry, and I can see more clear on the top. Sometimes, I have difficulty adjusting to my new vision field.\n\nI used a pre-cane when I first started to walk, now I use a white cane to navigate through life. At school, I can connect with other BVI children. I enjoy educating my classmates on my vision loss. I like to tell people that it is okay to be visually impaired, and if you are visually impaired, you can do anything that you put your mind to. In my free time, I enjoy singing and playing the piano. Because of my vision loss, it can be difficult to see the piano keys. I rely on touch and sound to play.\n\nGrowing up, my family did not have access to many resources for BVI children. After we moved to Wichita, I got connected with Envision and started to participate in the youth programs. Envision has helped me learn that it’s okay to be visually impaired, and that I can be independent and do anything I put my mind to.\n\nAbout the photos. Emma smiles with her hand raised, wearing teal glasses and a navy outfit and holding her white cane. Beside it is a second version of the photo, a general estimate of how Emma sees the world around her. Optic nerve hypoplasia (ONH) is a condition where the optic nerve, which carries visual information from the eye to the brain, is underdeveloped or smaller than normal. Vision with ONH varies, depending on the severity of the condition.\n\nBelow, Emma and a camp counselor sit together on a golf cart outdoors, both making surprised faces. Beside it, Emma smiles close to the camera with a friend in a busy dining hall.",
+  "images": [
+   {
+    "src": "img/emma-photo.jpg",
+    "alt": "Emma smiling with her white cane",
+    "cap": ""
+   },
+   {
+    "src": "img/emma-vision.jpg",
+    "alt": "A general estimate of how Emma sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/emma-b1.jpg",
+    "alt": "Emma and a camp counselor on a golf cart",
+    "cap": ""
+   },
+   {
+    "src": "img/emma-b2.jpg",
+    "alt": "Emma with a friend in a dining hall",
+    "cap": ""
+   }
+  ],
+  "looks": "Emma is a young girl with light skin and long, voluminous curly blonde hair that falls well past her shoulders. She wears teal rectangular glasses and has a big, playful smile. She is dressed in a navy short-sleeved top and navy pants. With one hand she holds her white cane close to her chest, and with the other she flashes a playful hand sign beside her face. She stands against a soft pink wall.",
+  "looksAudio": "audio/desc-emma.mp3"
+ },
+ {
+  "n": 6,
+  "name": "Linda",
+  "hook": "Finding Light Through Art",
+  "audio": "audio/story-6-linda.mp3",
+  "timings": null,
+  "text": "Finding Light Through Art. Linda.\n\nAt the age of 40, I was diagnosed with Fuchs dystrophy/disease and Glaucoma. At the time of my diagnosis, everything was stable. When I reached the age of 57, there was a drastic change in my vision. I started to have blurred vision accompanied by a severe pain. I continued to visit a specialist as my vision in my left eye decreased. I was later diagnosed with ICE-Chandlers syndrome.\n\nAfter receiving my diagnosis, I thought about my mother and her vision loss. She did not let her vision loss get her down, so I decided to have the same mindset. I was not going to let my vision loss hold me back.\n\nArt has been a therapy for me. It has opened doors I didn’t know existed. My specialist referred me to Envision. I was interested in the Envision Arts program, but it took me about four months before I decided to go to an art class. The first time I walked in, it felt like home. I was able to connect with people who were experiencing vision loss, visual impairment or blindness, just like I was. Regardless of our vision, we shared the same joy while creating art. I’m sure without the art class, I would be in dark places. Coming to Envision Arts has made me realize how blessed I am.\n\nAbout the photos. Linda smiles in a bright green blazer and red glasses, her hands clasped in front of her. Beside it is a second version of the photo, a general estimate of how Linda sees the world around her. Fuchs disease is a progressive eye disease that affects the cornea, the clear front layer of the eye. Glaucoma is a chronic eye disease that damages the optic nerve and can affect people of all ages. Vision loss from both eye diseases is different for each person.\n\nBelow, Linda stands in an Envision Arts gallery in a denim shirt, beside a colorful sculpture. Beside it, Linda smiles in a teal sweater next to a display of dark ceramic pieces at an art show.",
+  "images": [
+   {
+    "src": "img/linda-photo.jpg",
+    "alt": "Linda smiling in a green blazer",
+    "cap": ""
+   },
+   {
+    "src": "img/linda-vision.jpg",
+    "alt": "A general estimate of how Linda sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/linda-b1.jpg",
+    "alt": "Linda beside a sculpture in an art gallery",
+    "cap": ""
+   },
+   {
+    "src": "img/linda-b2.jpg",
+    "alt": "Linda next to ceramic art pieces",
+    "cap": ""
+   }
+  ],
+  "looks": "Linda is a woman in her sixties with medium brown skin and straight, sleek black hair that falls just past her shoulders. She wears red rectangular glasses, small gold hoop earrings, and a broad, warm smile. Her outfit is polished: a bright kelly green blazer with gold buttons over a black lace top, with dark blue jeans. She wears a gold necklace, a gold watch, and gold bracelets, and her hands are gently clasped in front of her. She stands against a plain light wall.",
+  "looksAudio": "audio/desc-linda.mp3"
+ },
+ {
+  "n": 7,
+  "name": "Luke",
+  "note": "Luke is performing live in the Rotunda tonight. Stop by to hear his music.",
+  "hook": "Finding Strength Through Music",
+  "audio": "audio/story-7-luke.mp3",
+  "timings": null,
+  "text": "Finding Strength Through Music. Luke.\n\nI was diagnosed with Leber’s Congenital Amaurosis (LCA) around the age of 5. LCA makes your immune system attack your retinas, so by the time I was in middle school I was using assistive technology to keep up with my schoolwork.\n\nGrowing up, I would feel angry and frustrated about my vision loss. I never knew why, I was just very frustrated all the time. As I got to my early teens, I became more depressed. When I got to high school I was able to connect with other kids that were experiencing vision loss through Envisions youth programs like Heather’s Camp and Level Up. After meeting them, I started to make peace with my vision loss.\n\nThroughout my life, I have used music as a form of self-expression. It has been with me through every stage of vision loss and has become my passion. It helps me work through my emotions. Music is something that will always be there, even when my vision is completely gone. My favorite part about writing my own music is sharing it with people. I write music for other people to understand me and learn more about me.\n\nAbout the photos. Luke smiles in a blue button-up shirt and jeans, his long hair past his shoulders. Beside it is a second version of the photo, a general estimate of how Luke sees the world around him. Leber’s Congenital Amaurosis (LCA) is a severe genetic eye disorder causing significant visual impairment or blindness from birth. LCA is a group of diseases that varies significantly from person to person.\n\nBelow, Luke stands in a dark suit with his white cane beside a woman who also holds a white cane, at an indoor event. Beside it, Luke wears a climbing helmet and sunglasses as he high-fives a counselor at a climbing wall.",
+  "images": [
+   {
+    "src": "img/luke-photo.jpg",
+    "alt": "Luke smiling in a blue shirt",
+    "cap": ""
+   },
+   {
+    "src": "img/luke-vision.jpg",
+    "alt": "A general estimate of how Luke sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/luke-b1.jpg",
+    "alt": "Luke with his white cane at an event",
+    "cap": ""
+   },
+   {
+    "src": "img/luke-b2.jpg",
+    "alt": "Luke high-fiving a counselor at a climbing wall",
+    "cap": ""
+   }
+  ],
+  "looks": "Luke is a young man with a slim build, light skin, and thick, wavy, light brown hair that falls past his shoulders, parted in the middle. He has a clean-shaven face and a wide, easy smile. He wears a blue short-sleeved button-up shirt with two chest pockets, untucked over dark blue jeans, with one hand tucked into his pocket. He stands relaxed against a plain light pink wall.",
+  "looksAudio": "audio/desc-luke.mp3"
+ },
+ {
+  "n": 8,
+  "name": "Norman",
+  "hook": "Work That Empowers My Journey",
+  "audio": "audio/story-8-norman.mp3",
+  "timings": null,
+  "text": "Work That Empowers My Journey. Norman.\n\nWhen I was 40, I had a stroke that took away my vision, leaving me completely blind. I lost all function in my left hand and also have an intellectual developmental disability due to the stroke. Soon after, I found Envision’s Adult Day Support Program, PRIDE. I had no prior training on how to navigate life with vision loss until I became a consumer through PRIDE, and have been for 15 years now. I was quickly introduced to Envision’s Vision Rehabilitation Center and received white cane training and have been using my cane ever since.\n\nPRIDE has helped me create structure and stability in my life and has helped me be financially stable on my own two feet. I am my own caretaker and a paid Envision employee through the PRIDE program. I get to come to work every day and make money and be independent. At the beginning, I was too afraid to attend any Envision programs. Now, I attend Adult Support Group at Envision every month and it’s the highlight of my day! I have made many friends, and I love the work I get to do.\n\nAbout the photos. Norman smiles in a royal blue polo shirt, holding his white cane. Beside it is a second version of the photo, a general estimate of how Norman sees the world around him. Strokes can cause varying degrees of impairment and each person’s experience is different.\n\nBelow, Norman laughs as he greets Mrs. Claus at a holiday event, with Santa beside them. Beside it, Norman smiles at work, holding a stack of flattened cardboard boxes.",
+  "images": [
+   {
+    "src": "img/norman-photo.jpg",
+    "alt": "Norman smiling in a blue polo, holding his white cane",
+    "cap": ""
+   },
+   {
+    "src": "img/norman-vision.jpg",
+    "alt": "A general estimate of how Norman sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/norman-b1.jpg",
+    "alt": "Norman greeting Mrs. Claus at a holiday event",
+    "cap": ""
+   },
+   {
+    "src": "img/norman-b2.jpg",
+    "alt": "Norman at work holding flattened boxes",
+    "cap": ""
+   }
+  ],
+  "looks": "Norman is an older man with dark brown skin, short white and gray hair, and a gray goatee. He has deep laugh lines and a big, open smile that lights up his whole face. He wears a royal blue short-sleeved polo shirt with a dark collar trim and a silver watch on his left wrist, which rests near his waist. In his right hand, he holds the black grip of his white cane. He stands against a plain off-white wall.",
+  "looksAudio": "audio/desc-norman.mp3"
+ },
+ {
+  "n": 9,
+  "name": "Peggy",
+  "hook": "The Big Impact of Little Things",
+  "audio": "audio/story-9-peggy.mp3",
+  "timings": null,
+  "text": "The Big Impact of Little Things. Peggy.\n\nMy eye doctor referred me to Envision 16 years ago when he diagnosed me with an eye disease called Macular Degeneration. I knew of Envision previously through my husband, who was a Child Neurologist and had been on many tours, but I never thought I would become a patient of Envision’s services.\n\nWhen I came for my first visit, my vision had deteriorated greatly, and I couldn’t see anything; or so I thought. Within three hours of visiting with vision rehabilitation experts at Envision, I was shown that I had pinpoints of clear vision in my peripheral area of my eyesight! This was huge for me because I realized there were things I thought I could never do again, that I now do every day.\n\nEnvision gave me the tools and resources to navigate independently, to read on my iPad and see parts of people’s faces I thought I would never be able to see again. They gave me the tools to succeed with the vision I have left, and I am where I am today because of Envision. When you find something that changes your life, all you want to do is spread the word. I’ve been a patient for over 10 years now and have referred three of my close friends who are losing their vision to Envision.\n\nAbout the photos. Peggy smiles in a black top and a silver cross necklace. Beside it is a second version of the photo, a general estimate of how Peggy sees the world around her. Macular Degeneration is an eye disease that damages a part of the retina and blurs vision. It is experienced differently by each person.\n\nBelow, Peggy stands beside a man in a plaid shirt as he works out on an exercise machine. Beside it, Peggy laughs outdoors in a wide straw hat and white sunglasses, holding up her eyeglasses.",
+  "images": [
+   {
+    "src": "img/peggy-photo.jpg",
+    "alt": "Peggy smiling in a black top",
+    "cap": ""
+   },
+   {
+    "src": "img/peggy-vision.jpg",
+    "alt": "A general estimate of how Peggy sees the same photo",
+    "cap": ""
+   },
+   {
+    "src": "img/peggy-b1.jpg",
+    "alt": "Peggy beside a man on an exercise machine",
+    "cap": ""
+   },
+   {
+    "src": "img/peggy-b2.jpg",
+    "alt": "Peggy laughing in a straw hat and sunglasses",
+    "cap": ""
+   }
+  ],
+  "looks": "Peggy is an older woman with fair, freckled skin and short, soft white hair styled with full, fluffy volume. She has bright eyes and a broad, joyful smile that crinkles the corners of her eyes. She wears a simple black top with elbow-length sleeves and a long, thin silver chain with a small ornate cross pendant resting at the center of her chest. She stands against a plain light gray wall.",
+  "looksAudio": "audio/desc-peggy.mp3"
+ }
+];
+
+const VIDEOS = [
+  { title:'Program Legacy', who:'Aubree, Hashim, and Stephen, three people at different stages of life who have grown up in Envision programs.', len:'About 4 min', ad:null },
+  { title:'Water Street', who:'Michael Monteferrante on the growth and renovation of Envision Wichita on Water Street.', len:'90 sec', ad:null },
+  { title:"Heather's Camp", who:"A look at Heather's Camp.", len:'90 sec', ad:null },
+  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:null },
+  { title:'Level Up', who:'A look at the Level Up program.', len:'90 sec', ad:null }
+];
+
+const PAGE_AUDIO = { welcome: 'audio/01-welcome.mp3', aruba: 'audio/08-aruba-chance-drawing.mp3', fundaneed: 'audio/07-fund-a-need.mp3', menu: 'audio/10-menu.mp3', evening: 'audio/09-tonights-program.mp3' }; // recorded narration per page
+const GIVE_URL = 'https://e.givesmart.com/events/Q5v/'; // paste the giving link here
+
+/* ============ helpers ============ */
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const live = $('#live');
+function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
+const store = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function sentences(text){ return (text.match(/[^.!?]+[.!?]+["'\u201d\u2019)\]]*\s*|[^.!?]+$/g) || [text]).map(s=>s.trim()).filter(Boolean); }
+
+/* ============ audio engine ============ */
+/* Recorded audio can be one file (audio) or several in a row (segments), e.g. a host voice for the
+   title, a second voice for the story, then the host again for the photo descriptions.
+   segments: [{ src:'file.mp3', paras:[firstParagraph, lastParagraph] }] (paragraph indexes in text). */
+const Player = (() => {
+  const synth = window.speechSynthesis;
+  const audio = new Audio(); audio.preload = 'auto';
+  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0;
+  const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
+  const listeners = new Set();
+  function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
+  function stopAll(){ token++; try { synth && synth.cancel(); } catch(e){} audio.pause(); }
+  function buildSegs(item, sents){
+    if (item.segments && item.segments.length) {
+      const paras = item.text.split(/\n\n+/); let k = 0;
+      const ps = paras.map(pp => { const s0 = k; k += sentences(pp).length; return s0; }); ps.push(k);
+      return item.segments.map(sg => ({ src: sg.src, a: ps[sg.paras[0]], b: ps[sg.paras[1] + 1] }));
+    }
+    if (item.audio) return [{ src: item.audio, a: 0, b: sents.length }];
+    return null;
+  }
+  function speakFrom(i){
+    const my = ++token;
+    if (!synth) { announce('Read aloud is not available on this device.'); playing=false; emit(); return; }
+    if (i >= cur.sents.length) { finish(); return; }
+    idx = i; emit();
+    const u = new SpeechSynthesisUtterance(cur.sents[i]);
+    u.rate = rates[rateI]; u.lang = 'en-US';
+    u.onend = () => { if (my === token && playing) speakFrom(i + 1); };
+    u.onerror = () => { if (my === token && playing) speakFrom(i + 1); };
+    synth.speak(u);
+  }
+  function loadSeg(i, at){
+    si = i; const sg = cur.segs[i];
+    audio.src = sg.src; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
+    idx = sg.a; emit();
+    if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
+    if (playing) audio.play().catch(() => { playing = false; emit(); });
+  }
+  function finish(){ playing = false; emit(); const cb = onEndCb; if (cb) cb(cur); }
+  audio.addEventListener('timeupdate', () => {
+    if (!cur || !cur.segs) return;
+    const sg = cur.segs[si]; let i = sg.a;
+    if (cur.timings && cur.segs.length === 1) { cur.timings.forEach((t, k) => { if (audio.currentTime >= t) i = k; }); }
+    else if (audio.duration) {
+      /* no timing file: estimate each sentence's start from its share of the characters */
+      const lens = cur.sents.slice(sg.a, sg.b).map(x => x.length), total = lens.reduce((x, y) => x + y, 0) || 1;
+      const target = audio.currentTime / audio.duration * total; let acc = 0;
+      for (let k = 0; k < lens.length; k++) { if (acc + lens[k] > target) { i = sg.a + k; break; } acc += lens[k]; i = sg.a + k; }
+    }
+    if (i !== idx) { idx = i; emit(); }
+  });
+  audio.addEventListener('ended', () => {
+    if (cur && cur.segs && si < cur.segs.length - 1) loadSeg(si + 1); else finish();
+  });
+  return {
+    on(fn){ listeners.add(fn); },
+    play(item, opts={}){
+      stopAll();
+      const sents = sentences(item.text);
+      cur = { ...item, sents, segs: buildSegs(item, sents) };
+      onEndCb = opts.onEnd || null;
+      idx = opts.from || 0; playing = true;
+      if (cur.segs && opts.delay) {
+        const my = token, sg = cur.segs[0]; si = 0;
+        audio.src = sg.src; audio.muted = true;
+        audio.play().then(() => { audio.pause(); audio.currentTime = 0; audio.muted = false; }).catch(() => { audio.muted = false; });
+        idx = sg.a; emit();
+        setTimeout(() => { if (my === token && playing) { audio.muted = false; audio.currentTime = 0; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI]; audio.play().catch(() => { playing = false; emit(); }); } }, opts.delay);
+      }
+      else if (cur.segs) loadSeg(0);
+      else if (opts.delay) { const my = token; idx = 0; emit(); setTimeout(() => { if (my === token && playing) speakFrom(0); }, opts.delay); }
+      else speakFrom(idx);
+    },
+    toggle(){
+      if (!cur) return;
+      if (playing) { playing = false; stopAll(); emit(); announce('Paused'); }
+      else { playing = true; if (cur.segs) { audio.play().catch(() => { playing = false; emit(); }); emit(); } else speakFrom(idx); }
+    },
+    back(){
+      if (!cur) return;
+      if (cur.segs) {
+        if (audio.currentTime < 3 && si > 0) { const prev = si - 1; const d = 15 - audio.currentTime; loadSeg(prev, Infinity); audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.max(0, audio.duration - d); }, { once: true }); }
+        else audio.currentTime = Math.max(0, audio.currentTime - 15);
+      }
+      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); if (was) { playing = true; speakFrom(idx); } else emit(); }
+    },
+    rate(){
+      rateI = (rateI + 1) % rates.length; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
+      if (cur && !cur.segs && playing) { stopAll(); playing = true; speakFrom(idx); }
+      emit(); return rates[rateI];
+    },
+    close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
+    get state(){ return { cur, idx, playing, rate: rates[rateI] }; }
+  };
+})();
+
+const PLAY_SVG = '<path d="M7 5l12 7-12 7z"/>', PAUSE_SVG = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+function renderMini(){
+  const s = Player.state, mini = $('#mini');
+  if (!s.cur) { mini.hidden = true; return; }
+  mini.hidden = false;
+  $('#miniTitle').textContent = s.cur.name;
+  $('#miniSub').textContent = s.playing ? 'Playing' : 'Paused';
+  $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
+  $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
+  $('#miniRate').textContent = s.rate + '×';
+  $('#miniRate').setAttribute('aria-label', 'Reading speed ' + s.rate + ' times. Change speed');
+  $('#miniBack').setAttribute('aria-label', s.cur.segs ? 'Back 15 seconds' : 'Back one sentence');
+}
+$('#miniPlay').onclick = () => Player.toggle();
+$('#miniBack').onclick = () => Player.back();
+$('#miniRate').onclick = () => { const r = Player.rate(); announce('Speed ' + r + ' times'); };
+$('#miniClose').onclick = () => Player.close();
+
+/* ============ router ============ */
+const VIEWS = ['home','welcome','map','stories','story','program','watch','give'];
+let currentStory = null;
+function route(){
+  let h = (location.hash || '#home').slice(1);
+  if (h === 'main') return;
+  let view = h, storyN = null;
+  const m = h.match(/^story(\d+)$/);
+  if (m) { view = 'story'; storyN = +m[1]; }
+  if (!VIEWS.includes(view)) view = 'home';
+  closeSheet(true);
+  $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
+  if (view === 'story') openStory(storyN);
+  if (view === 'stories') renderStories();
+  $('#navHome').toggleAttribute('aria-current', view === 'home'); if (view==='home') $('#navHome').setAttribute('aria-current','page');
+  $('#navGive').toggleAttribute('aria-current', view === 'give'); if (view==='give') $('#navGive').setAttribute('aria-current','page');
+  const sec = $('[data-view="' + view + '"]'), h1 = $('h1', sec);
+  document.title = (view === 'home' ? '' : (h1.textContent + ' | ')) + 'A Night For Vision';
+  window.scrollTo(0, 0);
+  if (routed) h1.focus({ preventScroll: true });
+  routed = true;
+  store.set('gala-last', h);
+}
+let routed = false;
+window.addEventListener('hashchange', route);
+
+/* ============ map ============ */
+let floor = 'all', mapMode = 'list';
+function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
+function renderMap(){
+  $('#spotList').innerHTML = spotsShown().map(s =>
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)}<span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+  const shown = spotsShown();
+  const by = id => SPOTS.find(x => x.id === id);
+  const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
+  $('#planGrid').innerHTML =
+    `<p class="note">Upstairs, left to right. A sketch, not to scale.</p>
+     <div class="fp" role="group" aria-label="Upstairs floor plan, left to right">
+       ${room('beren','r-beren')}${room('rotunda','r-rot')}${room('dinner','r-hall')}${room('upper','r-upper')}
+       <div class="fp-enter" aria-hidden="true"><span>Stairs up from check-in</span></div>
+     </div>
+     <div class="row">${room('stairs','r-stairs')}</div>
+     <p class="note">Restrooms: in the Rotunda, near the Beren Room entrance. Elevator: Great Hall. Photo booths: Upper Gallery and the bottom of the stairs.</p>`;
+  $$('[data-floor]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.floor === floor)));
+  $$('[data-mapmode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mapmode === mapMode)));
+  $('#mapList').hidden = mapMode !== 'list'; $('#mapPlan').hidden = mapMode !== 'plan';
+}
+$$('[data-floor]').forEach(b => b.onclick = () => { floor = b.dataset.floor; renderMap(); announce(b.textContent + ' selected'); });
+$$('[data-mapmode]').forEach(b => b.onclick = () => { mapMode = b.dataset.mapmode; renderMap(); announce('Showing ' + b.textContent.toLowerCase()); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-spot]'); if (b) openSheet(b.dataset.spot, b); });
+
+let sheetReturn = null;
+function openSheet(id, from){
+  const s = SPOTS.find(x => x.id === id); if (!s) return;
+  sheetReturn = from;
+  $('#sheetTitle').textContent = s.name;
+  const dir = s.directions
+    ? `<ol>${s.directions.map(d => `<li>${esc(d)}</li>`).join('')}</ol>`
+    : '';
+  $('#sheetBody').innerHTML =
+    `<p class="when-line"><strong>${esc(s.when || '')}</strong> &middot; Upstairs</p>
+     <p class="lede">${esc(s.what)}</p>
+     <div class="row"><button class="btn" id="sheetListen">Listen</button>${s.extra ? '<a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a>' : ''}</div>
+     <h3>How to get there</h3>${dir}`;
+  $('#sheetListen').onclick = () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
+  $('#sheetScrim').hidden = false;
+  $('#sheetTitle').focus();
+}
+function closeSheet(silent){
+  if ($('#sheetScrim').hidden) return;
+  $('#sheetScrim').hidden = true;
+  if (!silent && sheetReturn) sheetReturn.focus();
+}
+$('#sheetClose').onclick = () => closeSheet();
+$('#sheetScrim').addEventListener('click', e => { if (e.target.id === 'sheetScrim' || e.target.closest('a')) closeSheet(true); });
+
+/* ============ stories ============ */
+const heard = new Set(store.get('gala-heard', []));
+function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
+function renderStories(){
+  $('#storyList').innerHTML = STORIES.map(s =>
+    `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}" aria-label="${esc(s.name)}, ${esc(s.hook)}. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}${heard.has(s.n) ? ' Heard.' : ''}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
+      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span aria-hidden="true">&rarr;</span></a></li>`).join('');
+}
+function openStory(n){
+  const s = STORIES.find(x => x.n === n) || STORIES[0];
+  currentStory = s;
+  $('#storyKicker').textContent = s.n === 0 ? 'Start here' : s.hook;
+  $('#h-story').textContent = s.name;
+  let gi = 0;
+  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${esc(t)}</span>`).join(' ') + '</p>').join('');
+  const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
+  const lk = $('#storyLooks'); lk.hidden = !s.looks;
+  if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  syncStory();
+  const next = STORIES[STORIES.indexOf(s) + 1];
+  $('#storyNext').hidden = !next;
+}
+function syncStory(){
+  const st = Player.state, mine = st.cur && currentStory && st.cur.name === currentStory.name;
+  $$('#storyText span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
+  const now = mine && $('#storyText span.now');
+  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+}
+Player.on(syncStory);
+function playStory(s, chain){
+  Player.play(s, { onEnd: done => {
+    markHeard(done.n);
+    if (chain) { const nx = STORIES[STORIES.indexOf(STORIES.find(x => x.n === done.n)) + 1]; if (nx) { location.hash = 'story' + nx.n; playStory(nx, true); } }
+  }});
+}
+$('#storyPlay').onclick = () => {
+  const st = Player.state;
+  if (st.cur && st.cur.name === currentStory.name) Player.toggle(); else playStory(currentStory, false);
+};
+$('#storyNext').onclick = () => { const nx = STORIES[STORIES.indexOf(currentStory) + 1]; if (nx) location.hash = 'story' + nx.n; };
+$('#playAll').onclick = () => { const first = STORIES.find(s => s.n > 0) || STORIES[0]; location.hash = 'story' + first.n; playStory(first, true); };
+$('#jumpForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('#jumpNum').value.trim(), n = parseInt(v, 10), msg = $('#jumpMsg'), inp = $('#jumpNum');
+  const numbered = STORIES.filter(s => s.n > 0);
+  const s = STORIES.find(x => x.n === n && n > 0);
+  if (s) { inp.removeAttribute('aria-invalid'); msg.textContent = ''; location.hash = 'story' + n; return; }
+  inp.setAttribute('aria-invalid', 'true');
+  msg.textContent = !v ? 'Enter the number printed on the story.'
+    : numbered.length ? `There's no story ${v}. Stories are numbered 1 to ${numbered[numbered.length - 1].n}.`
+    : 'Story numbers will work once the stories are added.';
+  inp.focus();
+});
+
+/* ============ photo zoom ============ */
+const LB = (() => {
+  const box = $('#lb'), img = $('#lbImg'), stage = $('#lbStage');
+  let list = [], i = 0, sc = 1, tx = 0, ty = 0, ret = null;
+  const ptrs = new Map(); let pinch0 = 0, sc0 = 1, last = null, tapT = 0;
+  function apply(){ img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`; }
+  function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
+  function show(k){
+    i = (k + list.length) % list.length; const im = list[i];
+    img.src = im.src; img.alt = im.alt; sc = 1; tx = 0; ty = 0; apply();
+    $('#lbCap').textContent = im.alt + (im.cap ? '. ' + im.cap : '');
+    $('#lbCount').textContent = (i + 1) + ' of ' + list.length;
+    announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
+  }
+  function open(images, k, from){ list = images; ret = from; box.hidden = false; document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
+  function close(){ box.hidden = true; document.body.style.overflow = ''; if (ret) ret.focus(); }
+  $('#lbClose').onclick = close;
+  $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
+  $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
+  $('#lbPrev').onclick = () => show(i - 1);
+  $('#lbNext').onclick = () => show(i + 1);
+  stage.addEventListener('pointerdown', e => {
+    stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); sc0 = sc; }
+    last = { x: e.clientX, y: e.clientY };
+    const now = Date.now(); if (now - tapT < 300) setScale(sc > 1 ? 1 : 2.5); tapT = now;
+  });
+  stage.addEventListener('pointermove', e => {
+    if (!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; setScale(sc0 * Math.hypot(a.x - b.x, a.y - b.y) / (pinch0 || 1)); }
+    else if (sc > 1 && last) { tx += e.clientX - last.x; ty += e.clientY - last.y; apply(); }
+    last = { x: e.clientX, y: e.clientY };
+  });
+  const up = e => { ptrs.delete(e.pointerId); if (!ptrs.size) last = null; };
+  stage.addEventListener('pointerup', up); stage.addEventListener('pointercancel', up);
+  stage.addEventListener('wheel', e => { e.preventDefault(); setScale(sc * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
+  document.addEventListener('keydown', e => {
+    if (box.hidden) return;
+    if (e.key === 'Escape') close();
+    else if (e.key === 'ArrowRight') show(i + 1);
+    else if (e.key === 'ArrowLeft') show(i - 1);
+    else if (e.key === '+' || e.key === '=') setScale(sc * 1.5);
+    else if (e.key === '-') setScale(sc / 1.5);
+    else if (e.key === 'Tab') trap(box, e);
+  });
+  return { open };
+})();
+document.addEventListener('click', e => {
+  const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
+  LB.open(currentStory.images || [], +z.dataset.zoom, z);
+});
+
+$('#looksPlay').onclick = () => { if (currentStory && currentStory.looks) Player.play({ name: 'What ' + currentStory.name + ' looks like', text: currentStory.looks, audio: currentStory.looksAudio || null }); };
+
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-autoplay]'); if (!c) return;
+  const st = STORIES.find(x => x.n === +c.dataset.autoplay);
+  if (st && st.looks) Player.play({ name: 'What ' + st.name + ' looks like', text: st.looks, audio: st.looksAudio || null }, { delay: 1400, onEnd: () => { if (currentStory === st) playStory(st, false); } });
+});
+
+/* ============ program tabs ============ */
+const tabs = $$('[role="tab"]');
+function selectTab(t){
+  tabs.forEach(x => { const on = x === t; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; $('#' + x.getAttribute('aria-controls')).hidden = !on; });
+}
+tabs.forEach((t, i) => {
+  t.onclick = () => selectTab(t);
+  t.onkeydown = e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; selectTab(n); n.focus(); }
+  };
+});
+
+document.addEventListener('click', e => { const t = e.target.closest('[data-tab]'); if (t) { e.preventDefault(); const tb = document.getElementById(t.dataset.tab); selectTab(tb); tb.focus(); } });
+
+/* ============ videos ============ */
+$('#videoList').innerHTML = VIDEOS.map((v, i) =>
+  `<li class="panel video-card"><h2 class="h2">${esc(v.title)}</h2>
+    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span><span class="badge" aria-label="Audio described">AD</span></div>
+    <p style="margin:0">${esc(v.who)}</p>
+    ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description</a>`
+           : ''}
+    <a class="btn ghost" href="#give">Support this work</a></li>`).join('');
+
+/* ============ give ============ */
+if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
+$('#giveLink').addEventListener('click', e => { if (!GIVE_URL) { e.preventDefault(); announce('The giving link is not added yet.'); } });
+
+/* ============ listen buttons for whole pages ============ */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-listen]'); if (!b) return;
+  const sec = b.closest('[data-view]'), scope = b.closest('[data-listen-scope]');
+  const clone = (scope || b.closest('[role="tabpanel"]') || sec).cloneNode(true);
+  $$('.back, button, .todo, .vh, a', clone).forEach(n => n.remove());
+  const key = scope ? scope.dataset.listenScope : sec.dataset.view;
+  const name = scope ? ($('h2', scope) || $('h1', sec)).textContent : $('h1', sec).textContent;
+  Player.play({ name, text: clone.textContent.replace(/\s+/g, ' ').trim(), audio: PAGE_AUDIO[key] || null });
+});
+
+/* ============ dialogs: focus trap + escape ============ */
+function trap(container, e){
+  const f = $$('button:not([hidden]), a[href], input', container).filter(x => x.offsetParent !== null);
+  if (!f.length) return;
+  const first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+document.addEventListener('keydown', e => {
+  const a = $('#a11yScrim'), s = $('#sheetScrim');
+  if (!a.hidden) { if (e.key === 'Escape') closeA11y(); if (e.key === 'Tab') trap(a, e); return; }
+  if (!s.hidden) { if (e.key === 'Escape') closeSheet(); if (e.key === 'Tab') trap(s, e); }
+});
+
+/* ============ accessibility panel ============ */
+const A_KEY = 'env-gala-a11y', root = document.documentElement;
+let prefs = store.get(A_KEY, {});
+if (!prefs.motion && matchMedia('(prefers-reduced-motion: reduce)').matches) prefs.motion = 'reduce';
+function applyPrefs(){
+  ['zoom','motion','underline','lines'].forEach(k => prefs[k] ? root.setAttribute('data-env-' + k, prefs[k]) : root.removeAttribute('data-env-' + k));
+  root.setAttribute('data-env-theme', prefs.theme || 'dark');
+  $$('[data-set]').forEach(b => b.setAttribute('aria-pressed', String((prefs[b.dataset.set] || (b.dataset.set === 'theme' ? 'dark' : '1')) === b.dataset.val)));
+  $$('[data-toggle]').forEach(b => b.setAttribute('aria-pressed', String(prefs[b.dataset.toggle] === (b.dataset.on || 'on'))));
+  const z = +(prefs.zoom || 1);
+  $('#textUp').setAttribute('aria-disabled', String(z >= 5));
+  $('#textDown').setAttribute('aria-disabled', String(z <= 1));
+}
+let a11yReturn = null;
+function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
+function closeA11y(){ $('#a11yScrim').hidden = true; if (a11yReturn) a11yReturn.focus(); }
+$('#a11yOpen').onclick = openA11y;
+$('#a11yScrim').addEventListener('click', e => {
+  const set = e.target.closest('[data-set]'), tog = e.target.closest('[data-toggle]');
+  if (set) { prefs[set.dataset.set] = set.dataset.val; announce(set.textContent + ' on'); }
+  if (tog) { const on = tog.dataset.on || 'on', k = tog.dataset.toggle; prefs[k] = prefs[k] === on ? null : on; if (!prefs[k]) delete prefs[k]; announce(tog.textContent + (prefs[k] ? ' on' : ' off')); }
+  if (set || tog) { store.set(A_KEY, prefs); applyPrefs(); }
+  if (e.target.closest('[data-a11y-close]') || e.target.id === 'a11yScrim') closeA11y();
+});
+const ZOOM_LABELS = { '1':'100%', '2':'125%', '3':'150%', '4':'175%', '5':'200%' };
+function stepZoom(d){
+  const now = +(prefs.zoom || 1), next = Math.min(5, Math.max(1, now + d));
+  if (next === now) { announce(d > 0 ? 'Text is at the largest size' : 'Text is at the standard size'); return; }
+  if (next === 1) delete prefs.zoom; else prefs.zoom = String(next);
+  store.set(A_KEY, prefs); applyPrefs(); announce('Text size ' + ZOOM_LABELS[next]);
+}
+$('#textUp').onclick = () => stepZoom(1);
+$('#textDown').onclick = () => stepZoom(-1);
+$('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* ============ boot ============ */
+applyPrefs(); renderMap(); renderStories();
+if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
+route();
+</script>
+
+</body>
+</html>
