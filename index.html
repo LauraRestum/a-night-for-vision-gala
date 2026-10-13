@@ -7,7 +7,7 @@
 <meta name="description" content="Guest guide for A Night For Vision, the 2026 Envision Gala at the Wichita Art Museum.">
 <meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="data:,">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <script>(function(){try{
@@ -53,6 +53,9 @@ html[data-env-zoom="2"] { font-size: 125%; }
 html[data-env-zoom="3"] { font-size: 150%; }
 html[data-env-zoom="4"] { font-size: 175%; }
 html[data-env-zoom="5"] { font-size: 200%; }
+/* very large text on narrow phones: let long words wrap, keep side margins at a fixed size */
+html[data-env-zoom="4"], html[data-env-zoom="5"] { overflow-wrap: anywhere; }
+html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y) { padding-inline: 16px; }
 html[data-env-lines="wide"] body { line-height: 1.9; }
 html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
@@ -79,6 +82,9 @@ button { font: inherit; color: inherit; }
 /* Header */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--stage);
   border-bottom: 1px solid var(--line); }
+/* with large text, or a phone turned sideways, a pinned header would cover most of the screen */
+html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
+@media (max-height: 500px) { .top { position: static; } }
 .top-in { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: .5rem;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .top-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
@@ -100,7 +106,7 @@ button { font: inherit; color: inherit; }
   padding: .1rem .5rem; border-radius: 3px; }
 
 /* Type */
-h1, h2, h3 { text-wrap: balance; margin: 0; }
+h1, h2, h3 { text-wrap: balance; margin: 0; overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
 .display { font-weight: 300; font-size: clamp(2.4rem, 1.6rem + 6vw, 3.6rem); overflow-wrap: anywhere; line-height: 1.02; letter-spacing: -.01em; }
 .display em { font-style: normal; color: var(--red-text); }
 .h1 { font-weight: 300; font-size: clamp(2rem, 1.5rem + 3vw, 2.75rem); overflow-wrap: anywhere; line-height: 1.1; }
@@ -183,7 +189,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 /* Bottom sheet */
 .sheet-scrim { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.6); display: flex; align-items: flex-end; justify-content: center; }
 .sheet { background: var(--stage); border: 1px solid var(--line); border-bottom: 0; border-radius: 14px 14px 0 0;
-  width: min(40rem, 100%); max-height: 85vh; overflow-y: auto; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  width: min(40rem, 100%); max-height: 85vh; max-height: 85dvh; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom, 0px));
   animation: rise .25s ease-out; }
 @keyframes rise { from { transform: translateY(24px); opacity: .4; } to { transform: none; opacity: 1; } }
 .sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
@@ -205,7 +211,10 @@ p { margin: 0 0 1rem; max-width: 65ch; }
   background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; }
 .story-card:hover { border-color: var(--red); }
 .story-card .num { font-weight: 300; font-size: 2rem; color: var(--red-text); text-align: center; font-variant-numeric: tabular-nums; }
-.story-card b { display: block; font-size: 1.125rem; }
+.story-card b { display: block; font-size: 1.125rem; overflow-wrap: anywhere; }
+/* very large text: photo on its own row so the name has the full width */
+html[data-env-zoom="4"] .story-card, html[data-env-zoom="5"] .story-card { grid-template-columns: minmax(0, 1fr) auto; }
+html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .story-card > :first-child { grid-column: 1 / -1; }
 .heard { font-weight: 600; }
 .looks { margin-bottom: 1.25rem; display: grid; gap: .6rem; }
 .looks p { margin: 0; }
@@ -232,6 +241,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
+.read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
 
 /* Program */
@@ -248,7 +258,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 
 /* Videos */
 .videos { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
-.video-card { display: grid; gap: .75rem; }
+.video-card { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; }
 .video-card .meta { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-weight: 500; }
 .badge { border: 1px solid var(--ink); border-radius: 4px; padding: 0 .4rem; font-weight: 700; }
 
@@ -266,14 +276,14 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--ctl); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
 .icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
 .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; padding-block: .6rem; }
+.tabs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .75rem; padding-block: .6rem; }
 .tabs a { min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); }
 .tabs a.give { background: var(--red); border-color: var(--red); color: var(--on-red); }
 .tabs a[aria-current="page"] { outline: 2px solid var(--ink); outline-offset: 2px; }
 
 /* Accessibility dialog */
 .a11y-scrim { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 1rem; }
-.a11y { background: var(--stage); border: 1px solid var(--line); border-radius: 8px; width: min(28rem, 100%); max-height: 90vh; overflow-y: auto; padding: 1.25rem; }
+.a11y { background: var(--stage); border: 1px solid var(--line); border-radius: 8px; width: min(28rem, 100%); max-height: 90vh; max-height: 90dvh; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem; }
 .a11y fieldset { border: 0; padding: 0; margin: 0 0 1.25rem; }
 .a11y legend { font-weight: 700; margin-bottom: .5rem; }
 .a11y-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
@@ -301,6 +311,7 @@ html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
   .pin { border: 2px solid CanvasText; }
   .btn, .icon-btn.main { border-color: ButtonText; }
   .read span.now { outline: 2px solid Highlight; }
+  .read .w.cur { outline: 2px solid Highlight; forced-color-adjust: none; background: Highlight; color: HighlightText; }
   .tabs a[aria-current="page"] { outline-color: Highlight; }
 }
 
@@ -338,8 +349,8 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, plus the program book</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, the program book, and a large print PDF</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description where available</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span> <span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
     </ol>
   </section>
@@ -451,6 +462,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-program" tabindex="-1">Tonight's Program</h1>
     </div>
+    <p><a class="btn ghost" href="docs/2026_Gala_Program_LargePrint.pdf" target="_blank" rel="noopener">Large print program (PDF, 16 pages)<span class="vh">, opens in a new tab</span></a></p>
     <div class="seg tablist" role="tablist" aria-label="Program sections">
       <button role="tab" id="tab-evening" aria-controls="pane-evening" aria-selected="true">The evening</button>
       <button role="tab" id="tab-menu" aria-controls="pane-menu" aria-selected="false" tabindex="-1">Menu</button>
@@ -510,7 +522,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div class="view-head">
       <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
-      <p>Tonight's five videos, in the order they play, each with an audio described version.</p>
+      <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
     <ul class="videos" id="videoList"></ul>
   </section>
@@ -674,7 +686,7 @@ const STORIES = [
     "cap": ""
    }
   ],
-  "looks": "Aubree is a 13-year-old girl with a slim build, light skin, and straight brown hair cut just above her shoulders. Her face is bright and open, with her head tilted slightly upward and a wide, joyful smile that shows her teeth, as if she is mid-laugh. She wears a white short-sleeved peasant blouse with soft gathered sleeves, a delicate gold necklace, and frayed denim shorts. She stands against a plain cream wall, holding her white cane with a red tip upright at her side.",
+  "looks": "Aubree is a 13-year-old girl. Light skin and straight brown hair cut just above her shoulders. Her face is bright and open, with her head tilted slightly upward and a wide, joyful smile that shows her teeth, as if she is mid-laugh. She wears a white short-sleeved blouse with soft gathered sleeves, a delicate gold necklace, and frayed denim shorts. She stands against a plain cream wall, holding her white cane with a red tip upright at her side.",
   "looksAudio": "audio/desc-aubree.mp3"
  },
  {
@@ -706,7 +718,7 @@ const STORIES = [
     "cap": "Heather’s Camp 2026"
    }
   ],
-  "looks": "Adah is a teenage girl with light brown skin and dark brown curly hair that falls in loose ringlets past her shoulders. She has round cheeks and a soft, closed-mouth smile, and she gazes upward and off to the side as if thinking of something happy. She wears a plain cream crew-neck T-shirt tucked into high-waisted tan pants. Behind her is a playground, with a curving green tube slide and a tan metal railing.",
+  "looks": "Adah is a teenage girl, 18, with light brown skin and dark brown curly hair that falls in loose ringlets past her shoulders. She has round cheeks and a soft, closed-mouth smile, and she gazes upward and off to the side as if thinking of something happy. She wears a plain cream crew-neck T-shirt tucked into high-waisted tan pants. Behind her is a playground, with a curving green tube slide and a tan metal railing.",
   "looksAudio": "audio/desc-adah.mp3"
  },
  {
@@ -803,7 +815,7 @@ const STORIES = [
     "cap": ""
    }
   ],
-  "looks": "Emma is a young girl with light skin and long, voluminous curly blonde hair that falls well past her shoulders. She wears teal rectangular glasses and has a big, playful smile. She is dressed in a navy short-sleeved top and navy pants. With one hand she holds her white cane close to her chest, and with the other she flashes a playful hand sign beside her face. She stands against a soft pink wall.",
+  "looks": "Emma is a young girl with light skin and long, voluminous curly blonde hair that falls well past her shoulders. She wears teal rectangular glasses and has a big, playful smile. She is dressed in a navy short-sleeved top and navy pants. With one hand she holds her white cane close to her chest, and with the other she flashes a playful peace hand sign beside her face. She stands against a soft pink wall.",
   "looksAudio": "audio/desc-emma.mp3"
  },
  {
@@ -868,7 +880,7 @@ const STORIES = [
     "cap": ""
    }
   ],
-  "looks": "Luke is a young man with a slim build, light skin, and thick, wavy, light brown hair that falls past his shoulders, parted in the middle. He has a clean-shaven face and a wide, easy smile. He wears a blue short-sleeved button-up shirt with two chest pockets, untucked over dark blue jeans, with one hand tucked into his pocket. He stands relaxed against a plain light pink wall.",
+  "looks": "Luke is a taller young man. Light skin and thick, wavy, light brown hair that falls past his shoulders, parted in the middle. He has a clean-shaven face and a wide, easy smile. He wears a blue short-sleeved button-up shirt with two chest pockets, untucked over dark blue jeans, with one hand tucked into his pocket. He stands relaxed against a plain light pink wall.",
   "looksAudio": "audio/desc-luke.mp3"
  },
  {
@@ -941,7 +953,7 @@ const VIDEOS = [
   { title:'Program Legacy', who:'Aubree, Hashim, and Stephen, three people at different stages of life who have grown up in Envision programs.', len:'About 4 min', ad:null },
   { title:'Water Street', who:'Michael Monteferrante on the growth and renovation of Envision Wichita on Water Street.', len:'90 sec', ad:null },
   { title:"Heather's Camp", who:"A look at Heather's Camp.", len:'90 sec', ad:null },
-  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:null },
+  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:'https://www.dropbox.com/scl/fi/aq2jb1yef5oq9uham5xzg/ECDC_Adah_FullCircle_AUDIO_DESCRIBED_FINAL.mp4?rlkey=23mukxiuba4it764afrznhwds&st=ud13yhgn&dl=0' },
   { title:'Level Up', who:'A look at the Level Up program.', len:'90 sec', ad:null }
 ];
 
@@ -974,13 +986,21 @@ const Player = (() => {
   const audio = new Audio(); audio.preload = 'auto';
   /* iOS Safari 17+: play as media so the ring/silent switch does not mute the recordings */
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
-  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
+  let cur = null, idx = 0, pos = 0, tick = null, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
   const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
   const listeners = new Set();
   function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
   /* only show Playing once sound is actually coming out; Loading until then */
   audio.addEventListener('waiting', () => { if (playing && cur && cur.segs) { loading = true; emit(); } });
   audio.addEventListener('playing', () => { if (loading) { loading = false; emit(); } });
+  /* the phone can pause us (a call, Siri, headphones unplugged, another app): show Paused */
+  let selfPause = false;
+  audio.addEventListener('pause', () => {
+    if (selfPause) { selfPause = false; return; }
+    if (audio.ended || !playing || !audio.paused || !cur || !cur.segs) return;
+    playing = false; loading = false; emit();
+  });
+  audio.addEventListener('play', () => { if (cur && cur.segs && !playing) { playing = true; emit(); } });
   audio.addEventListener('error', () => {
     if (!cur || !cur.segs || !audio.getAttribute('src')) return;
     token++; playing = false; loading = false; emit();
@@ -1000,9 +1020,10 @@ const Player = (() => {
     const my = ++token;
     if (!synth) { announce('Read aloud is not available on this device.'); playing=false; emit(); return; }
     if (i >= cur.sents.length) { finish(); return; }
-    idx = i; emit();
+    idx = i; pos = 0; emit();
     const u = new SpeechSynthesisUtterance(cur.sents[i]);
     u.rate = rates[rateI]; u.lang = 'en-US';
+    u.onboundary = e => { if (my === token && playing && e.name !== 'sentence') { pos = e.charIndex; emit(); } };
     u.onend = () => { if (my === token && playing) speakFrom(i + 1); };
     u.onerror = () => { if (my === token && playing) speakFrom(i + 1); };
     synth.speak(u);
@@ -1010,23 +1031,29 @@ const Player = (() => {
   function loadSeg(i, at){
     si = i; const sg = cur.segs[i]; loading = true;
     audio.src = sg.src; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
-    idx = sg.a; emit();
+    idx = sg.a; pos = 0; emit();
     if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
     if (playing) audio.play().catch(() => { playing = false; emit(); });
   }
   function finish(){ playing = false; emit(); const cb = onEndCb; if (cb) cb(cur); }
-  audio.addEventListener('timeupdate', () => {
+  /* Work out which sentence, and how far into it, the recording has reached. There is no word
+     timing file, so position inside a sentence is estimated from its share of the characters. */
+  function track(){
     if (!cur || !cur.segs) return;
-    const sg = cur.segs[si]; let i = sg.a;
+    const sg = cur.segs[si]; let i = sg.a, p = 0;
     if (cur.timings && cur.segs.length === 1) { cur.timings.forEach((t, k) => { if (audio.currentTime >= t) i = k; }); }
     else if (audio.duration) {
-      /* no timing file: estimate each sentence's start from its share of the characters */
       const lens = cur.sents.slice(sg.a, sg.b).map(x => x.length), total = lens.reduce((x, y) => x + y, 0) || 1;
       const target = audio.currentTime / audio.duration * total; let acc = 0;
-      for (let k = 0; k < lens.length; k++) { if (acc + lens[k] > target) { i = sg.a + k; break; } acc += lens[k]; i = sg.a + k; }
+      for (let k = 0; k < lens.length; k++) { i = sg.a + k; p = target - acc; if (acc + lens[k] > target) break; acc += lens[k]; }
     }
-    if (i !== idx) { idx = i; emit(); }
-  });
+    if (i !== idx || Math.abs(p - pos) >= 1) { idx = i; pos = p; emit(); }
+  }
+  audio.addEventListener('timeupdate', track);
+  /* timeupdate only fires about 4 times a second; poll faster while sound is playing so words keep up */
+  const stopTick = () => { clearInterval(tick); tick = null; };
+  audio.addEventListener('playing', () => { if (!tick) tick = setInterval(track, 90); });
+  ['pause', 'ended', 'emptied', 'error'].forEach(ev => audio.addEventListener(ev, stopTick));
   audio.addEventListener('ended', () => {
     if (cur && cur.segs && si < cur.segs.length - 1) loadSeg(si + 1); else finish();
   });
@@ -1037,14 +1064,14 @@ const Player = (() => {
       const sents = sentences(item.text);
       cur = { ...item, sents, segs: buildSegs(item, sents) };
       onEndCb = opts.onEnd || null;
-      idx = opts.from || 0; playing = true;
+      idx = opts.from || 0; pos = 0; playing = true;
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
         audio.src = sg.src; audio.muted = true; loading = true;
         /* muted start inside the tap unlocks playback; on a slow load it can resolve after the real
            start below, so only pause it if the delay has not run out and nothing else has started */
         let unlocking = true;
-        audio.play().then(() => { if (unlocking && my === token) { audio.pause(); audio.currentTime = 0; } audio.muted = false; }).catch(() => { audio.muted = false; });
+        audio.play().then(() => { if (unlocking && my === token) { selfPause = !audio.paused; audio.pause(); audio.currentTime = 0; } audio.muted = false; }).catch(() => { audio.muted = false; });
         idx = sg.a; emit();
         setTimeout(() => { unlocking = false; if (my === token && playing) { audio.muted = false; audio.currentTime = 0; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI]; audio.play().catch(() => { playing = false; emit(); }); } }, opts.delay);
       }
@@ -1063,7 +1090,7 @@ const Player = (() => {
         if (audio.currentTime < 3 && si > 0) { const prev = si - 1; const d = 15 - audio.currentTime; loadSeg(prev, Infinity); audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.max(0, audio.duration - d); }, { once: true }); }
         else audio.currentTime = Math.max(0, audio.currentTime - 15);
       }
-      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); if (was) { playing = true; speakFrom(idx); } else emit(); }
+      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); pos = 0; if (was) { playing = true; speakFrom(idx); } else emit(); }
     },
     rate(){
       rateI = (rateI + 1) % rates.length; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
@@ -1071,13 +1098,15 @@ const Player = (() => {
       emit(); return rates[rateI];
     },
     close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
-    get state(){ return { cur, idx, playing, loading: playing && loading, rate: rates[rateI] }; }
+    get state(){ return { cur, idx, pos, playing, loading: playing && loading, rate: rates[rateI] }; }
   };
 })();
 
 const PLAY_SVG = '<path d="M7 5l12 7-12 7z"/>', PAUSE_SVG = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 function renderMini(){
   const s = Player.state, mini = $('#mini');
+  const sig = s.cur ? [s.cur.name, s.loading, s.playing, s.rate, !!s.cur.segs].join('|') : '';
+  if (sig === renderMini.last) return; renderMini.last = sig;
   if (!s.cur) { mini.hidden = true; return; }
   mini.hidden = false;
   $('#miniTitle').textContent = s.cur.name;
@@ -1098,6 +1127,23 @@ $('#miniClose').onclick = () => {
   const back = lastTrigger && lastTrigger.isConnected && lastTrigger.offsetParent !== null ? lastTrigger : $('h1:not([hidden])', $('[data-view]:not([hidden])'));
   if (back) back.focus({ preventScroll: true });
 };
+
+/* lock screen and notification controls (iPhone, Android) */
+if ('mediaSession' in navigator) {
+  const ms = navigator.mediaSession;
+  const set = (a, fn) => { try { ms.setActionHandler(a, fn); } catch(e){} };
+  set('play', () => { if (Player.state.cur && !Player.state.playing) Player.toggle(); });
+  set('pause', () => { if (Player.state.playing) Player.toggle(); });
+  set('seekbackward', () => Player.back());
+  set('stop', () => Player.close());
+  let shown = null;
+  Player.on(({ cur, playing }) => {
+    try {
+      if (cur !== shown) { shown = cur; ms.metadata = cur ? new MediaMetadata({ title: cur.name, artist: 'A Night For Vision', album: 'Envision Gala 2026' }) : null; }
+      ms.playbackState = cur ? (playing ? 'playing' : 'paused') : 'none';
+    } catch(e){}
+  });
+}
 
 /* ============ router ============ */
 const VIEWS = ['home','welcome','map','stories','story','program','watch','give'];
@@ -1185,13 +1231,18 @@ function renderStories(){
       <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
+function words(t){
+  let out = '', last = 0;
+  for (const m of t.matchAll(/\S+/g)) { out += esc(t.slice(last, m.index)) + `<span class="w" data-s="${m.index}">${esc(m[0])}</span>`; last = m.index + m[0].length; }
+  return out + esc(t.slice(last));
+}
 function openStory(n){
   const s = STORIES.find(x => x.n === n) || STORIES[0];
   currentStory = s;
   $('#storyKicker').textContent = s.n === 0 ? 'Start here' : s.hook;
   $('#h-story').textContent = s.name;
   let gi = 0;
-  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${esc(t)}</span>`).join(' ') + '</p>').join('');
+  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${words(t)}</span>`).join(' ') + '</p>').join('');
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
@@ -1202,9 +1253,12 @@ function openStory(n){
 }
 function syncStory(){
   const st = Player.state, mine = st.cur && currentStory && st.cur.name === currentStory.name;
-  $$('#storyText span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText > p > span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText .w.cur').forEach(w => w.classList.remove('cur'));
+  const sentNow = mine && $('#storyText > p > span.now');
+  if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
-  const now = mine && $('#storyText span.now');
+  const now = sentNow;
   if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
 }
 Player.on(syncStory);
@@ -1318,7 +1372,7 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-tab]
 /* ============ videos ============ */
 $('#videoList').innerHTML = VIDEOS.map((v, i) =>
   `<li class="panel video-card"><h2 class="h2">${esc(v.title)}</h2>
-    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span><span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span></div>
+    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}

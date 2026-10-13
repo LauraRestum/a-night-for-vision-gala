@@ -1,7 +1,7 @@
 # A Night For Vision: Gala Guest Portal
 
 Guest-facing companion site for the 2026 Envision Gala (Saturday, October 24th, 2026, Wichita Art Museum).
-Static site: one `index.html`, plus `audio/` (ElevenLabs narration, MP3) and `img/` (photos cropped from the Through My Eyes banners). No build step.
+Static site: one `index.html`, plus `audio/` (ElevenLabs narration, MP3), `img/` (photos cropped from the Through My Eyes banners), and `docs/` (large print program PDF, tagged, linked from the Program page). No build step.
 
 ## How the page is organized
 - Everything lives in `index.html`: styles at the top, markup in the middle, one script at the bottom.
@@ -25,6 +25,6 @@ Static site: one `index.html`, plus `audio/` (ElevenLabs narration, MP3) and `im
 - Donor-facing names: Bicknell Envision Vision Rehabilitation Center, Gigi & Carl Allen Envision Research Institute, Cathy G. Hudson Envision Child Development Center.
 
 ## Open items
-- Audio-described video links for the Watch page.
+- Audio-described video links for the Watch page (Adah is in; four to go: Program Legacy, Water Street, Heather's Camp, Level Up).
 - Optional recording for Bottom of the Stairs.
 - Museum Wi-Fi details, if signal upstairs is weak.
