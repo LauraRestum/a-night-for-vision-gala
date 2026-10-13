@@ -14,7 +14,7 @@
   var p = JSON.parse(localStorage.getItem('env-gala-a11y') || '{}');
   var r = document.documentElement;
   r.setAttribute('lang','en');
-  r.setAttribute('data-env-theme', ['dark','light','hc'].indexOf(p.theme) > -1 ? p.theme : 'dark');
+  r.setAttribute('data-env-theme', ['dark','light','hc'].indexOf(p.theme) > -1 ? p.theme : (matchMedia('(prefers-contrast: more)').matches ? 'hc' : 'dark'));
   ['zoom','motion','underline','lines'].forEach(function(k){ if (p[k]) r.setAttribute('data-env-' + k, p[k]); });
 }catch(e){ document.documentElement.setAttribute('data-env-theme','dark'); }})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,19 +33,20 @@
   --line: rgba(244,241,236,0.22);
   --focus: #FFFFFF;
   --hl: rgba(228,0,43,0.32); /* read-along highlight */
+  --ctl: rgba(244,241,236,0.6); /* control borders: 3:1 or better */
   --font: 'Montserrat', 'Gotham', 'Helvetica Neue', Arial, sans-serif;
   color-scheme: dark;
 }
 html[data-env-theme="light"] {
   --stage: #FAF8F5; --surface: #FFFFFF; --ink: #0A0A0A;
   --red: #A62B1B; --red-text: #A62B1B; --on-red: #FFFFFF;
-  --line: rgba(10,10,10,0.2); --focus: #0A0A0A; --hl: rgba(166,43,27,0.18);
+  --line: rgba(10,10,10,0.2); --ctl: rgba(10,10,10,0.6); --focus: #0A0A0A; --hl: rgba(166,43,27,0.18);
   color-scheme: light;
 }
 html[data-env-theme="hc"] {
   --stage: #000000; --surface: #000000; --ink: #FFFFFF;
   --red: #FF4D5E; --red-text: #FFD400; --on-red: #000000;
-  --line: #FFFFFF; --focus: #FFD400; --hl: rgba(255,212,0,0.35);
+  --line: #FFFFFF; --ctl: #FFFFFF; --focus: #FFD400; --hl: rgba(255,212,0,0.35);
   color-scheme: dark;
 }
 html[data-env-zoom="2"] { font-size: 125%; }
@@ -56,9 +57,13 @@ html[data-env-zoom="5"] { font-size: 200%; }
 html[data-env-zoom="4"], html[data-env-zoom="5"] { overflow-wrap: anywhere; }
 html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y) { padding-inline: 16px; }
 html[data-env-lines="wide"] body { line-height: 1.9; }
+html[data-env-lines="wide"] .read { line-height: 2.1; }
+html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
 * { box-sizing: border-box; }
+button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
 body {
   margin: 0; background: var(--stage); color: var(--ink);
@@ -83,14 +88,14 @@ html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="
 .top-in { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: .5rem;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .top-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
-.size-btn { min-width: 48px; min-height: 44px; border: 1px solid var(--line); background: transparent; border-radius: 999px; font-weight: 700; cursor: pointer; padding: 0 .75rem; }
+.size-btn { min-width: 48px; min-height: 44px; border: 1px solid var(--ctl); background: transparent; border-radius: 999px; font-weight: 700; cursor: pointer; padding: 0 .75rem; }
 .size-btn:hover { border-color: var(--red); }
 .size-btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
 .size-btn .big { font-size: 1.25em; }
 .mark { text-decoration: none; display: flex; flex-direction: column; line-height: 1.15; min-height: 44px; justify-content: center; }
 .mark b { font-weight: 300; font-size: 1.125rem; letter-spacing: .14em; text-transform: uppercase; }
 .mark span { font-size: 1rem; font-weight: 500; }
-.pill { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: .5rem 1rem;
+.pill { background: transparent; border: 1px solid var(--ctl); border-radius: 999px; padding: .5rem 1rem;
   min-height: 44px; font-weight: 600; cursor: pointer; }
 .pill:hover { border-color: var(--red); }
 
@@ -111,7 +116,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .lede { font-size: 1.1875rem; }
 .view-head { padding-block: 2rem 1.5rem; display: grid; gap: .75rem; }
 .back { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; font-weight: 600; text-decoration: none; }
-.back::before { content: "\2190"; }
+.back::before { content: "\2190"; content: "\2190" / ""; }
 [tabindex="-1"]:focus { outline: none; }
 
 /* Home: the evening as doors */
@@ -138,7 +143,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 48px;
   padding: .75rem 1.25rem; border-radius: 999px; border: 2px solid var(--red); background: var(--red);
   color: var(--on-red); font-weight: 700; text-decoration: none; cursor: pointer; }
-.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--ctl); }
 .btn.ghost:hover { border-color: var(--red); }
 .btn[aria-disabled="true"] { opacity: .6; cursor: not-allowed; }
 .btn.wide { width: 100%; }
@@ -146,7 +151,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 
 /* Segmented controls / tabs */
 .seg { display: flex; gap: .5rem; flex-wrap: wrap; }
-.seg button { min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--line); background: transparent;
+.seg button { min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--ctl); background: transparent;
   border-radius: 999px; font-weight: 600; cursor: pointer; }
 .seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: var(--ink); color: var(--stage); border-color: var(--ink); }
 
@@ -164,14 +169,14 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .plan .note { grid-column: span 2; margin: 0; }
 .plan { grid-template-columns: 1fr; }
 .fp { display: grid; grid-template-columns: 1fr .9fr 1.25fr 1fr; gap: .4rem; align-items: stretch; }
-.room { border: 2px solid var(--line); background: transparent; border-radius: 4px; min-height: 7rem; padding: .5rem .4rem;
+.room { border: 2px solid var(--ctl); background: transparent; border-radius: 4px; min-height: 7rem; padding: .5rem .4rem;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem; text-align: center; cursor: pointer; min-width: 0; }
 .room:hover { border-color: var(--red); }
-.room b { font-weight: 600; font-size: .95rem; line-height: 1.2; overflow-wrap: anywhere; }
+.room b { font-weight: 600; font-size: 1rem; line-height: 1.2; overflow-wrap: anywhere; }
 .room .pin { width: 2rem; height: 2rem; border-radius: 50%; background: var(--red); color: var(--on-red); display: grid; place-items: center; font-weight: 700; }
 .r-rot { border-radius: 999px; }
 .fp-enter { grid-column: 3; text-align: center; font-weight: 600; border-top: 3px solid var(--red); padding-top: .4rem; }
-.fp-enter span::before { content: "\2191  "; }
+.fp-enter span::before { content: "\2191  "; content: "\2191  " / ""; }
 .r-stairs { flex-direction: row; min-height: 3.5rem; width: 100%; }
 .spots { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
 .spot { width: 100%; text-align: left; display: grid; grid-template-columns: 2.25rem 1fr; gap: .75rem;
@@ -190,7 +195,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1rem; }
 .sheet-head > :first-child { min-width: 0; overflow-wrap: anywhere; }
 .x { flex-shrink: 0; }
-.x { min-width: 44px; min-height: 44px; border: 1px solid var(--line); background: transparent; border-radius: 50%; font-size: 1.25rem; cursor: pointer; }
+.x { min-width: 44px; min-height: 44px; border: 1px solid var(--ctl); background: transparent; border-radius: 50%; font-size: 1.25rem; cursor: pointer; }
 .sheet h3 { font-size: 1.125rem; margin: 1.25rem 0 .5rem; }
 .sheet ol { margin: 0; padding-left: 1.25rem; display: grid; gap: .4rem; }
 
@@ -199,7 +204,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .jump label { font-weight: 600; }
 .jump-row { display: flex; gap: .5rem; }
 .jump input { flex: 1; min-width: 0; min-height: 48px; font: inherit; font-size: 1.25rem; padding: .5rem .9rem;
-  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+  background: var(--surface); color: var(--ink); border: 1px solid var(--ctl); border-radius: 6px; }
 .jump-msg { min-height: 1.6em; margin: 0; }
 .stories { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
 .story-card { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: 1rem; align-items: center; text-decoration: none;
@@ -236,6 +241,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
+.read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
 
 /* Program */
@@ -267,7 +273,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .mini-title { min-width: 0; }
 .mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mini-ctrls { display: flex; gap: .4rem; }
-.icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
+.icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--ctl); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
 .icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
 .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
 .tabs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .75rem; padding-block: .6rem; }
@@ -283,6 +289,32 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .a11y-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .linkish { background: none; border: 0; text-decoration: underline; font-weight: 600; min-height: 44px; cursor: pointer; }
 
+/* Large text, short screens: nothing sticky should eat the viewport */
+html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
+@media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
+html[data-env-zoom] .mini-title b { white-space: normal; }
+html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
+.seg button, .btn, .pill { overflow-wrap: anywhere; }
+.stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
+p, h2, h3, li, b { overflow-wrap: break-word; }
+.row > .btn, .player-big > .btn { max-width: 100%; }
+@media (max-width: 34rem) { .fp { grid-template-columns: 1fr 1fr; } .fp-enter { grid-column: 1 / -1; } }
+html[data-env-zoom] .fp { grid-template-columns: 1fr 1fr; }
+html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
+
+/* Windows forced colors / high contrast modes */
+@media (forced-colors: active) {
+  .seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: Highlight; color: HighlightText; border-color: Highlight; forced-color-adjust: none; }
+  .tips li::before { background: CanvasText; forced-color-adjust: none; }
+  .lineup li::before { background: Canvas; border-color: CanvasText; forced-color-adjust: none; }
+  .lineup li.video::before { background: CanvasText; }
+  .pin { border: 2px solid CanvasText; }
+  .btn, .icon-btn.main { border-color: ButtonText; }
+  .read span.now { outline: 2px solid Highlight; }
+  .read .w.cur { outline: 2px solid Highlight; forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .tabs a[aria-current="page"] { outline-color: Highlight; }
+}
+
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html[data-env-motion="reduce"] *::after { animation: none !important; transition: none !important; }
 </style>
@@ -291,13 +323,13 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
 
 <header class="top">
   <div class="top-in">
-    <a class="mark" href="#home" aria-label="A Night For Vision, back to the evening">
+    <a class="mark" href="#home" aria-label="A Night For Vision, Envision Gala 2026. Back to the evening">
       <b aria-hidden="true">A Night For Vision</b>
       <span aria-hidden="true">Envision Gala 2026</span>
     </a>
     <div class="top-tools">
-      <button class="size-btn" id="textDown" aria-label="Make text smaller">A<span aria-hidden="true">&minus;</span></button>
-      <button class="size-btn" id="textUp" aria-label="Make text larger"><span class="big">A</span><span aria-hidden="true">+</span></button>
+      <button class="size-btn" id="textDown" aria-label="A minus, make text smaller">A<span aria-hidden="true">&minus;</span></button>
+      <button class="size-btn" id="textUp" aria-label="A plus, make text larger"><span class="big">A</span><span aria-hidden="true">+</span></button>
       <button class="pill" id="a11yOpen" aria-haspopup="dialog">Accessibility</button>
     </div>
   </div>
@@ -314,19 +346,19 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     </div>
     <h2 class="vh">Your evening</h2>
     <ol class="doors">
-      <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span><span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span><span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span><span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span><span class="d">The evening in order, plus the program book</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span><span class="d">Tonight's five videos, with audio description</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span><span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, the program book, and a large print PDF</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description where available</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span> <span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
     </ol>
   </section>
 
   <!-- WELCOME -->
   <section data-view="welcome" aria-labelledby="h-welcome" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-welcome" tabindex="-1">Welcome</h1>
     </div>
     <div class="stack">
@@ -366,7 +398,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- MAP -->
   <section data-view="map" aria-labelledby="h-map" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-map" tabindex="-1">Explore the Museum</h1>
       <p>Check in downstairs, then head up the stairs into the Great Hall. Everything this evening is on that one floor: the Rotunda and Beren Room to the left, the Upper Gallery to the right. Choose a spot to see what's there and how to get to it.</p>
     </div>
@@ -385,7 +417,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- STORIES LIST -->
   <section data-view="stories" aria-labelledby="h-stories" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-stories" tabindex="-1">Through My Eyes</h1>
       <p>Real life stories from Envision program participants, shared on the banners around the Rotunda. Select a name to listen as you stand before their banner.</p>
     </div>
@@ -406,7 +438,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- STORY DETAIL -->
   <section data-view="story" aria-labelledby="h-story" hidden>
     <div class="view-head">
-      <a class="back" href="#stories">All stories</a>
+      <a class="back" href="#stories" aria-label="Back to all stories">All stories</a>
       <p class="kicker" id="storyKicker"></p>
       <h1 class="h1" id="h-story" tabindex="-1"></h1>
     </div>
@@ -427,9 +459,10 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- PROGRAM -->
   <section data-view="program" aria-labelledby="h-program" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-program" tabindex="-1">Tonight's Program</h1>
     </div>
+    <p><a class="btn ghost" href="docs/2026_Gala_Program_LargePrint.pdf" target="_blank" rel="noopener">Large print program (PDF, 16 pages)<span class="vh">, opens in a new tab</span></a></p>
     <div class="seg tablist" role="tablist" aria-label="Program sections">
       <button role="tab" id="tab-evening" aria-controls="pane-evening" aria-selected="true">The evening</button>
       <button role="tab" id="tab-menu" aria-controls="pane-menu" aria-selected="false" tabindex="-1">Menu</button>
@@ -439,29 +472,29 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
             <ol class="lineup">
-        <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b>Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
-        <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b>Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
-        <li><b>National Anthem</b>Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
-        <li><b>Spirit of Philanthropy Award</b>Presented to 6 Meridian</li>
-        <li><b>7:00 p.m. &middot; Dinner</b>Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
-        <li class="video"><b>Program Legacy</b>A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description</a></li>
-        <li><b>7:30 p.m. &middot; Fund-A-Need</b>Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
-        <li class="video"><b>Water Street</b><a href="#watch">Watch with audio description</a></li>
-        <li class="video"><b>Heather's Camp</b><a href="#watch">Watch with audio description</a></li>
-        <li class="video"><b>Cathy G. Hudson Envision Child Development Center</b><a href="#watch">Watch with audio description</a></li>
-        <li class="video"><b>Level Up</b><a href="#watch">Watch with audio description</a></li>
-        <li><b>Chance Drawing Winner</b>Announced at the close of Fund-A-Need</li>
-        <li><b>8:30 p.m. &middot; Program Ends</b>Thank you for joining us.</li>
+        <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b> Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
+        <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b> Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
+        <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
+        <li><b>Spirit of Philanthropy Award</b> Presented to 6 Meridian</li>
+        <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
+        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
+        <li><b>7:30 p.m. &middot; Fund-A-Need</b> Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
+        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch">Watch with audio description<span class="vh">: Water Street</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch">Watch with audio description<span class="vh">: Heather's Camp</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch">Watch with audio description<span class="vh">: Level Up</span></a></li>
+        <li><b>Chance Drawing Winner</b> Announced at the close of Fund-A-Need</li>
+        <li><b>8:30 p.m. &middot; Program Ends</b> Thank you for joining us.</li>
       </ol>
     </div>
     <div role="tabpanel" id="pane-menu" aria-labelledby="tab-menu" data-listen-scope="menu" hidden>
       <h2 class="vh">Menu</h2>
       <div class="stack">
         <button class="btn ghost" data-listen="program">Listen to the menu</button>
-        <div class="tier"><h2 class="h2">Cocktail Hour</h2><p>Pancetta boats</p><p>Crab salad on a phyllo cup</p><p>Mini meatball in a pastry cup</p></div>
-        <div class="tier"><h2 class="h2">Salad</h2><p>Spring mix, tomato, cucumber, feta cheese, and walnuts, topped with an herbal dressing</p></div>
-        <div class="tier"><h2 class="h2">Entr&eacute;e</h2><p>Sliced Sterling Silver roasted tenderloin topped with a crab cake and finished with a B&eacute;arnaise sauce, accompanied by herbal roasted potatoes, grilled asparagus, and carrots</p></div>
-        <div class="tier"><h2 class="h2">Dessert</h2><p>Flourless chocolate cake topped with chocolate ganache and a chocolate mousse</p></div>
+        <div class="tier"><h3 class="h2">Cocktail Hour</h3><p>Pancetta boats</p><p>Crab salad on a phyllo cup</p><p>Mini meatball in a pastry cup</p></div>
+        <div class="tier"><h3 class="h2">Salad</h3><p>Spring mix, tomato, cucumber, feta cheese, and walnuts, topped with an herbal dressing</p></div>
+        <div class="tier"><h3 class="h2">Entr&eacute;e</h3><p>Sliced Sterling Silver roasted tenderloin topped with a crab cake and finished with a B&eacute;arnaise sauce, accompanied by herbal roasted potatoes, grilled asparagus, and carrots</p></div>
+        <div class="tier"><h3 class="h2">Dessert</h3><p>Flourless chocolate cake topped with chocolate ganache and a chocolate mousse</p></div>
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
@@ -487,9 +520,9 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- WATCH -->
   <section data-view="watch" aria-labelledby="h-watch" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
-      <p>Tonight's five videos, in the order they play, each with an audio described version.</p>
+      <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
     <ul class="videos" id="videoList"></ul>
   </section>
@@ -497,7 +530,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- GIVE -->
   <section data-view="give" aria-labelledby="h-give" hidden>
     <div class="view-head">
-      <a class="back" href="#home">The evening</a>
+      <a class="back" href="#home" aria-label="Back to the evening">The evening</a>
       <h1 class="h1" id="h-give" tabindex="-1">Give</h1>
     </div>
     <div class="stack">
@@ -522,7 +555,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
 
 <div class="dock">
   <div class="dock-in">
-    <div class="mini" id="mini" hidden>
+    <div class="mini" id="mini" role="region" aria-label="Audio player" hidden>
       <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span id="miniSub"></span></div>
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
@@ -653,7 +686,7 @@ const STORIES = [
     "cap": ""
    }
   ],
-  "looks": "Aubree is a 13-year-old girl with a slim build, light skin, and straight brown hair cut just above her shoulders. Her face is bright and open, with her head tilted slightly upward and a wide, joyful smile that shows her teeth, as if she is mid-laugh. She wears a white short-sleeved peasant blouse with soft gathered sleeves, a delicate gold necklace, and frayed denim shorts. She stands against a plain cream wall, holding her white cane with a red tip upright at her side.",
+  "looks": "Aubree is a 13-year-old girl. Light skin and straight brown hair cut just above her shoulders. Her face is bright and open, with her head tilted slightly upward and a wide, joyful smile that shows her teeth, as if she is mid-laugh. She wears a white short-sleeved blouse with soft gathered sleeves, a delicate gold necklace, and frayed denim shorts. She stands against a plain cream wall, holding her white cane with a red tip upright at her side.",
   "looksAudio": "audio/desc-aubree.mp3"
  },
  {
@@ -685,7 +718,7 @@ const STORIES = [
     "cap": "Heather’s Camp 2026"
    }
   ],
-  "looks": "Adah is a teenage girl with light brown skin and dark brown curly hair that falls in loose ringlets past her shoulders. She has round cheeks and a soft, closed-mouth smile, and she gazes upward and off to the side as if thinking of something happy. She wears a plain cream crew-neck T-shirt tucked into high-waisted tan pants. Behind her is a playground, with a curving green tube slide and a tan metal railing.",
+  "looks": "Adah is a teenage girl, 18, with light brown skin and dark brown curly hair that falls in loose ringlets past her shoulders. She has round cheeks and a soft, closed-mouth smile, and she gazes upward and off to the side as if thinking of something happy. She wears a plain cream crew-neck T-shirt tucked into high-waisted tan pants. Behind her is a playground, with a curving green tube slide and a tan metal railing.",
   "looksAudio": "audio/desc-adah.mp3"
  },
  {
@@ -782,7 +815,7 @@ const STORIES = [
     "cap": ""
    }
   ],
-  "looks": "Emma is a young girl with light skin and long, voluminous curly blonde hair that falls well past her shoulders. She wears teal rectangular glasses and has a big, playful smile. She is dressed in a navy short-sleeved top and navy pants. With one hand she holds her white cane close to her chest, and with the other she flashes a playful hand sign beside her face. She stands against a soft pink wall.",
+  "looks": "Emma is a young girl with light skin and long, voluminous curly blonde hair that falls well past her shoulders. She wears teal rectangular glasses and has a big, playful smile. She is dressed in a navy short-sleeved top and navy pants. With one hand she holds her white cane close to her chest, and with the other she flashes a playful peace hand sign beside her face. She stands against a soft pink wall.",
   "looksAudio": "audio/desc-emma.mp3"
  },
  {
@@ -920,7 +953,7 @@ const VIDEOS = [
   { title:'Program Legacy', who:'Aubree, Hashim, and Stephen, three people at different stages of life who have grown up in Envision programs.', len:'About 4 min', ad:null },
   { title:'Water Street', who:'Michael Monteferrante on the growth and renovation of Envision Wichita on Water Street.', len:'90 sec', ad:null },
   { title:"Heather's Camp", who:"A look at Heather's Camp.", len:'90 sec', ad:null },
-  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:null },
+  { title:'Cathy G. Hudson Envision Child Development Center', who:'Ms. Teresa and Adah, a former student whose journey came full circle at the Center.', len:'90 sec', ad:'https://www.dropbox.com/scl/fi/aq2jb1yef5oq9uham5xzg/ECDC_Adah_FullCircle_AUDIO_DESCRIBED_FINAL.mp4?rlkey=23mukxiuba4it764afrznhwds&st=ud13yhgn&dl=0' },
   { title:'Level Up', who:'A look at the Level Up program.', len:'90 sec', ad:null }
 ];
 
@@ -931,6 +964,11 @@ const GIVE_URL = 'https://e.givesmart.com/events/Q5v/'; // paste the giving link
 const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
 const live = $('#live');
+/* While a dialog is open, everything behind it is inert for keyboard and screen readers */
+function syncInert(){
+  const open = ['#sheetScrim', '#a11yScrim', '#lb'].some(q => !$(q).hidden);
+  ['.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
+}
 function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
 const store = {
   get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
@@ -948,7 +986,7 @@ const Player = (() => {
   const audio = new Audio(); audio.preload = 'auto';
   /* iOS Safari 17+: play as media so the ring/silent switch does not mute the recordings */
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
-  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
+  let cur = null, idx = 0, pos = 0, tick = null, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
   const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
   const listeners = new Set();
   function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
@@ -982,9 +1020,10 @@ const Player = (() => {
     const my = ++token;
     if (!synth) { announce('Read aloud is not available on this device.'); playing=false; emit(); return; }
     if (i >= cur.sents.length) { finish(); return; }
-    idx = i; emit();
+    idx = i; pos = 0; emit();
     const u = new SpeechSynthesisUtterance(cur.sents[i]);
     u.rate = rates[rateI]; u.lang = 'en-US';
+    u.onboundary = e => { if (my === token && playing && e.name !== 'sentence') { pos = e.charIndex; emit(); } };
     u.onend = () => { if (my === token && playing) speakFrom(i + 1); };
     u.onerror = () => { if (my === token && playing) speakFrom(i + 1); };
     synth.speak(u);
@@ -992,23 +1031,29 @@ const Player = (() => {
   function loadSeg(i, at){
     si = i; const sg = cur.segs[i]; loading = true;
     audio.src = sg.src; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
-    idx = sg.a; emit();
+    idx = sg.a; pos = 0; emit();
     if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
     if (playing) audio.play().catch(() => { playing = false; emit(); });
   }
   function finish(){ playing = false; emit(); const cb = onEndCb; if (cb) cb(cur); }
-  audio.addEventListener('timeupdate', () => {
+  /* Work out which sentence, and how far into it, the recording has reached. There is no word
+     timing file, so position inside a sentence is estimated from its share of the characters. */
+  function track(){
     if (!cur || !cur.segs) return;
-    const sg = cur.segs[si]; let i = sg.a;
+    const sg = cur.segs[si]; let i = sg.a, p = 0;
     if (cur.timings && cur.segs.length === 1) { cur.timings.forEach((t, k) => { if (audio.currentTime >= t) i = k; }); }
     else if (audio.duration) {
-      /* no timing file: estimate each sentence's start from its share of the characters */
       const lens = cur.sents.slice(sg.a, sg.b).map(x => x.length), total = lens.reduce((x, y) => x + y, 0) || 1;
       const target = audio.currentTime / audio.duration * total; let acc = 0;
-      for (let k = 0; k < lens.length; k++) { if (acc + lens[k] > target) { i = sg.a + k; break; } acc += lens[k]; i = sg.a + k; }
+      for (let k = 0; k < lens.length; k++) { i = sg.a + k; p = target - acc; if (acc + lens[k] > target) break; acc += lens[k]; }
     }
-    if (i !== idx) { idx = i; emit(); }
-  });
+    if (i !== idx || Math.abs(p - pos) >= 1) { idx = i; pos = p; emit(); }
+  }
+  audio.addEventListener('timeupdate', track);
+  /* timeupdate only fires about 4 times a second; poll faster while sound is playing so words keep up */
+  const stopTick = () => { clearInterval(tick); tick = null; };
+  audio.addEventListener('playing', () => { if (!tick) tick = setInterval(track, 90); });
+  ['pause', 'ended', 'emptied', 'error'].forEach(ev => audio.addEventListener(ev, stopTick));
   audio.addEventListener('ended', () => {
     if (cur && cur.segs && si < cur.segs.length - 1) loadSeg(si + 1); else finish();
   });
@@ -1019,7 +1064,7 @@ const Player = (() => {
       const sents = sentences(item.text);
       cur = { ...item, sents, segs: buildSegs(item, sents) };
       onEndCb = opts.onEnd || null;
-      idx = opts.from || 0; playing = true;
+      idx = opts.from || 0; pos = 0; playing = true;
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
         audio.src = sg.src; audio.muted = true; loading = true;
@@ -1045,7 +1090,7 @@ const Player = (() => {
         if (audio.currentTime < 3 && si > 0) { const prev = si - 1; const d = 15 - audio.currentTime; loadSeg(prev, Infinity); audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.max(0, audio.duration - d); }, { once: true }); }
         else audio.currentTime = Math.max(0, audio.currentTime - 15);
       }
-      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); if (was) { playing = true; speakFrom(idx); } else emit(); }
+      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); pos = 0; if (was) { playing = true; speakFrom(idx); } else emit(); }
     },
     rate(){
       rateI = (rateI + 1) % rates.length; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
@@ -1053,13 +1098,15 @@ const Player = (() => {
       emit(); return rates[rateI];
     },
     close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
-    get state(){ return { cur, idx, playing, loading: playing && loading, rate: rates[rateI] }; }
+    get state(){ return { cur, idx, pos, playing, loading: playing && loading, rate: rates[rateI] }; }
   };
 })();
 
 const PLAY_SVG = '<path d="M7 5l12 7-12 7z"/>', PAUSE_SVG = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 function renderMini(){
   const s = Player.state, mini = $('#mini');
+  const sig = s.cur ? [s.cur.name, s.loading, s.playing, s.rate, !!s.cur.segs].join('|') : '';
+  if (sig === renderMini.last) return; renderMini.last = sig;
   if (!s.cur) { mini.hidden = true; return; }
   mini.hidden = false;
   $('#miniTitle').textContent = s.cur.name;
@@ -1073,7 +1120,13 @@ function renderMini(){
 $('#miniPlay').onclick = () => Player.toggle();
 $('#miniBack').onclick = () => Player.back();
 $('#miniRate').onclick = () => { const r = Player.rate(); announce('Speed ' + r + ' times'); };
-$('#miniClose').onclick = () => Player.close();
+let lastTrigger = null;
+document.addEventListener('click', e => { const t = e.target.closest('button, a'); if (t && !t.closest('.dock')) lastTrigger = t; }, true);
+$('#miniClose').onclick = () => {
+  Player.close();
+  const back = lastTrigger && lastTrigger.isConnected && lastTrigger.offsetParent !== null ? lastTrigger : $('h1:not([hidden])', $('[data-view]:not([hidden])'));
+  if (back) back.focus({ preventScroll: true });
+};
 
 /* lock screen and notification controls (iPhone, Android) */
 if ('mediaSession' in navigator) {
@@ -1123,7 +1176,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)}<span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1131,7 +1184,7 @@ function renderMap(){
     `<p class="note">Upstairs, left to right. A sketch, not to scale.</p>
      <div class="fp" role="group" aria-label="Upstairs floor plan, left to right">
        ${room('beren','r-beren')}${room('rotunda','r-rot')}${room('dinner','r-hall')}${room('upper','r-upper')}
-       <div class="fp-enter" aria-hidden="true"><span>Stairs up from check-in</span></div>
+       <div class="fp-enter"><span>Stairs up from check-in</span></div>
      </div>
      <div class="row">${room('stairs','r-stairs')}</div>
      <p class="note">Restrooms: in the Rotunda, near the Beren Room entrance. Elevator: Great Hall. Photo booths: Upper Gallery and the bottom of the stairs.</p>`;
@@ -1158,12 +1211,12 @@ function openSheet(id, from){
      ${s.extra ? '<div class="row"><a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a></div>' : ''}
      <h3>How to get there</h3>${dir}`;
   $('#sheetListen').onclick = () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
-  $('#sheetScrim').hidden = false;
+  $('#sheetScrim').hidden = false; syncInert();
   $('#sheetTitle').focus();
 }
 function closeSheet(silent){
   if ($('#sheetScrim').hidden) return;
-  $('#sheetScrim').hidden = true;
+  $('#sheetScrim').hidden = true; syncInert();
   if (!silent && sheetReturn) sheetReturn.focus();
 }
 $('#sheetClose').onclick = () => closeSheet();
@@ -1174,9 +1227,14 @@ const heard = new Set(store.get('gala-heard', []));
 function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
-    `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}" aria-label="${esc(s.name)}, ${esc(s.hook)}. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}${heard.has(s.n) ? ' Heard.' : ''}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
+    `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
       <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
-      <span aria-hidden="true">&rarr;</span></a></li>`).join('');
+      <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
+}
+function words(t){
+  let out = '', last = 0;
+  for (const m of t.matchAll(/\S+/g)) { out += esc(t.slice(last, m.index)) + `<span class="w" data-s="${m.index}">${esc(m[0])}</span>`; last = m.index + m[0].length; }
+  return out + esc(t.slice(last));
 }
 function openStory(n){
   const s = STORIES.find(x => x.n === n) || STORIES[0];
@@ -1184,21 +1242,24 @@ function openStory(n){
   $('#storyKicker').textContent = s.n === 0 ? 'Start here' : s.hook;
   $('#h-story').textContent = s.name;
   let gi = 0;
-  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${esc(t)}</span>`).join(' ') + '</p>').join('');
+  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${words(t)}</span>`).join(' ') + '</p>').join('');
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
 }
 function syncStory(){
   const st = Player.state, mine = st.cur && currentStory && st.cur.name === currentStory.name;
-  $$('#storyText span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText > p > span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText .w.cur').forEach(w => w.classList.remove('cur'));
+  const sentNow = mine && $('#storyText > p > span.now');
+  if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
-  const now = mine && $('#storyText span.now');
-  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  const now = sentNow;
+  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
 }
 Player.on(syncStory);
 function playStory(s, chain){
@@ -1231,7 +1292,12 @@ const LB = (() => {
   const box = $('#lb'), img = $('#lbImg'), stage = $('#lbStage');
   let list = [], i = 0, sc = 1, tx = 0, ty = 0, ret = null;
   const ptrs = new Map(); let pinch0 = 0, sc0 = 1, last = null, tapT = 0;
-  function apply(){ img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`; }
+  function apply(){
+    /* keep the photo inside the frame: it can only be dragged as far as its zoomed edge */
+    const mx = Math.max(0, (img.offsetWidth * sc - stage.clientWidth) / 2), my = Math.max(0, (img.offsetHeight * sc - stage.clientHeight) / 2);
+    tx = Math.min(mx, Math.max(-mx, tx)); ty = Math.min(my, Math.max(-my, ty));
+    img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`;
+  }
   function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
   function show(k){
     i = (k + list.length) % list.length; const im = list[i];
@@ -1240,8 +1306,8 @@ const LB = (() => {
     $('#lbCount').textContent = (i + 1) + ' of ' + list.length;
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
-  function open(images, k, from){ list = images; ret = from; box.hidden = false; document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; document.body.style.overflow = ''; if (ret) ret.focus(); }
+  function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
+  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
   $('#lbClose').onclick = close;
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
@@ -1264,7 +1330,9 @@ const LB = (() => {
   stage.addEventListener('wheel', e => { e.preventDefault(); setScale(sc * (e.deltaY < 0 ? 1.15 : 1 / 1.15)); }, { passive: false });
   document.addEventListener('keydown', e => {
     if (box.hidden) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key === 'Escape') close();
+    else if (sc > 1 && e.key.startsWith('Arrow')) { e.preventDefault(); const d = 60; if (e.key === 'ArrowRight') tx -= d; else if (e.key === 'ArrowLeft') tx += d; else if (e.key === 'ArrowUp') ty += d; else ty -= d; apply(); }
     else if (e.key === 'ArrowRight') show(i + 1);
     else if (e.key === 'ArrowLeft') show(i - 1);
     else if (e.key === '+' || e.key === '=') setScale(sc * 1.5);
@@ -1295,6 +1363,7 @@ tabs.forEach((t, i) => {
   t.onclick = () => selectTab(t);
   t.onkeydown = e => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length]; selectTab(n); n.focus(); }
+    else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); const n = tabs[e.key === 'Home' ? 0 : tabs.length - 1]; selectTab(n); n.focus(); }
   };
 });
 
@@ -1303,11 +1372,11 @@ document.addEventListener('click', e => { const t = e.target.closest('[data-tab]
 /* ============ videos ============ */
 $('#videoList').innerHTML = VIDEOS.map((v, i) =>
   `<li class="panel video-card"><h2 class="h2">${esc(v.title)}</h2>
-    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span><span class="badge" aria-label="Audio described">AD</span></div>
+    <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
-    ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description</a>`
+    ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}
-    <a class="btn ghost" href="#give">Support this work</a></li>`).join('');
+    <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
 
 /* ============ give ============ */
 if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
@@ -1344,7 +1413,7 @@ let prefs = store.get(A_KEY, {});
 if (!prefs.motion && matchMedia('(prefers-reduced-motion: reduce)').matches) prefs.motion = 'reduce';
 function applyPrefs(){
   ['zoom','motion','underline','lines'].forEach(k => prefs[k] ? root.setAttribute('data-env-' + k, prefs[k]) : root.removeAttribute('data-env-' + k));
-  root.setAttribute('data-env-theme', prefs.theme || 'dark');
+  root.setAttribute('data-env-theme', prefs.theme || (matchMedia('(prefers-contrast: more)').matches ? 'hc' : 'dark'));
   $$('[data-set]').forEach(b => b.setAttribute('aria-pressed', String((prefs[b.dataset.set] || (b.dataset.set === 'theme' ? 'dark' : '1')) === b.dataset.val)));
   $$('[data-toggle]').forEach(b => b.setAttribute('aria-pressed', String(prefs[b.dataset.toggle] === (b.dataset.on || 'on'))));
   const z = +(prefs.zoom || 1);
@@ -1352,12 +1421,12 @@ function applyPrefs(){
   $('#textDown').setAttribute('aria-disabled', String(z <= 1));
 }
 let a11yReturn = null;
-function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
-function closeA11y(){ $('#a11yScrim').hidden = true; if (a11yReturn) a11yReturn.focus(); }
+function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; syncInert(); $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
+function closeA11y(){ $('#a11yScrim').hidden = true; syncInert(); if (a11yReturn) a11yReturn.focus(); }
 $('#a11yOpen').onclick = openA11y;
 $('#a11yScrim').addEventListener('click', e => {
   const set = e.target.closest('[data-set]'), tog = e.target.closest('[data-toggle]');
-  if (set) { prefs[set.dataset.set] = set.dataset.val; announce(set.textContent + ' on'); }
+  if (set) { prefs[set.dataset.set] = set.dataset.val; announce(set.dataset.set === 'zoom' ? 'Text size ' + set.textContent : set.dataset.set === 'theme' ? set.textContent + ' colors on' : set.textContent + ' on'); }
   if (tog) { const on = tog.dataset.on || 'on', k = tog.dataset.toggle; prefs[k] = prefs[k] === on ? null : on; if (!prefs[k]) delete prefs[k]; announce(tog.textContent + (prefs[k] ? ' on' : ' off')); }
   if (set || tog) { store.set(A_KEY, prefs); applyPrefs(); }
   if (e.target.closest('[data-a11y-close]') || e.target.id === 'a11yScrim') closeA11y();
