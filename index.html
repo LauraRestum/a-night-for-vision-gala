@@ -232,6 +232,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
+.read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
 
 /* Program */
@@ -301,6 +302,7 @@ html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
   .pin { border: 2px solid CanvasText; }
   .btn, .icon-btn.main { border-color: ButtonText; }
   .read span.now { outline: 2px solid Highlight; }
+  .read .w.cur { outline: 2px solid Highlight; forced-color-adjust: none; background: Highlight; color: HighlightText; }
   .tabs a[aria-current="page"] { outline-color: Highlight; }
 }
 
@@ -974,7 +976,7 @@ const Player = (() => {
   const audio = new Audio(); audio.preload = 'auto';
   /* iOS Safari 17+: play as media so the ring/silent switch does not mute the recordings */
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
-  let cur = null, idx = 0, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
+  let cur = null, idx = 0, pos = 0, tick = null, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
   const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
   const listeners = new Set();
   function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
@@ -1000,9 +1002,10 @@ const Player = (() => {
     const my = ++token;
     if (!synth) { announce('Read aloud is not available on this device.'); playing=false; emit(); return; }
     if (i >= cur.sents.length) { finish(); return; }
-    idx = i; emit();
+    idx = i; pos = 0; emit();
     const u = new SpeechSynthesisUtterance(cur.sents[i]);
     u.rate = rates[rateI]; u.lang = 'en-US';
+    u.onboundary = e => { if (my === token && playing && e.name !== 'sentence') { pos = e.charIndex; emit(); } };
     u.onend = () => { if (my === token && playing) speakFrom(i + 1); };
     u.onerror = () => { if (my === token && playing) speakFrom(i + 1); };
     synth.speak(u);
@@ -1010,23 +1013,29 @@ const Player = (() => {
   function loadSeg(i, at){
     si = i; const sg = cur.segs[i]; loading = true;
     audio.src = sg.src; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
-    idx = sg.a; emit();
+    idx = sg.a; pos = 0; emit();
     if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
     if (playing) audio.play().catch(() => { playing = false; emit(); });
   }
   function finish(){ playing = false; emit(); const cb = onEndCb; if (cb) cb(cur); }
-  audio.addEventListener('timeupdate', () => {
+  /* Work out which sentence, and how far into it, the recording has reached. There is no word
+     timing file, so position inside a sentence is estimated from its share of the characters. */
+  function track(){
     if (!cur || !cur.segs) return;
-    const sg = cur.segs[si]; let i = sg.a;
+    const sg = cur.segs[si]; let i = sg.a, p = 0;
     if (cur.timings && cur.segs.length === 1) { cur.timings.forEach((t, k) => { if (audio.currentTime >= t) i = k; }); }
     else if (audio.duration) {
-      /* no timing file: estimate each sentence's start from its share of the characters */
       const lens = cur.sents.slice(sg.a, sg.b).map(x => x.length), total = lens.reduce((x, y) => x + y, 0) || 1;
       const target = audio.currentTime / audio.duration * total; let acc = 0;
-      for (let k = 0; k < lens.length; k++) { if (acc + lens[k] > target) { i = sg.a + k; break; } acc += lens[k]; i = sg.a + k; }
+      for (let k = 0; k < lens.length; k++) { i = sg.a + k; p = target - acc; if (acc + lens[k] > target) break; acc += lens[k]; }
     }
-    if (i !== idx) { idx = i; emit(); }
-  });
+    if (i !== idx || Math.abs(p - pos) >= 1) { idx = i; pos = p; emit(); }
+  }
+  audio.addEventListener('timeupdate', track);
+  /* timeupdate only fires about 4 times a second; poll faster while sound is playing so words keep up */
+  const stopTick = () => { clearInterval(tick); tick = null; };
+  audio.addEventListener('playing', () => { if (!tick) tick = setInterval(track, 90); });
+  ['pause', 'ended', 'emptied', 'error'].forEach(ev => audio.addEventListener(ev, stopTick));
   audio.addEventListener('ended', () => {
     if (cur && cur.segs && si < cur.segs.length - 1) loadSeg(si + 1); else finish();
   });
@@ -1037,7 +1046,7 @@ const Player = (() => {
       const sents = sentences(item.text);
       cur = { ...item, sents, segs: buildSegs(item, sents) };
       onEndCb = opts.onEnd || null;
-      idx = opts.from || 0; playing = true;
+      idx = opts.from || 0; pos = 0; playing = true;
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
         audio.src = sg.src; audio.muted = true; loading = true;
@@ -1063,7 +1072,7 @@ const Player = (() => {
         if (audio.currentTime < 3 && si > 0) { const prev = si - 1; const d = 15 - audio.currentTime; loadSeg(prev, Infinity); audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.max(0, audio.duration - d); }, { once: true }); }
         else audio.currentTime = Math.max(0, audio.currentTime - 15);
       }
-      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); if (was) { playing = true; speakFrom(idx); } else emit(); }
+      else { const was = playing; stopAll(); idx = Math.max(0, idx - 1); pos = 0; if (was) { playing = true; speakFrom(idx); } else emit(); }
     },
     rate(){
       rateI = (rateI + 1) % rates.length; audio.defaultPlaybackRate = audio.playbackRate = rates[rateI];
@@ -1071,13 +1080,15 @@ const Player = (() => {
       emit(); return rates[rateI];
     },
     close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
-    get state(){ return { cur, idx, playing, loading: playing && loading, rate: rates[rateI] }; }
+    get state(){ return { cur, idx, pos, playing, loading: playing && loading, rate: rates[rateI] }; }
   };
 })();
 
 const PLAY_SVG = '<path d="M7 5l12 7-12 7z"/>', PAUSE_SVG = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 function renderMini(){
   const s = Player.state, mini = $('#mini');
+  const sig = s.cur ? [s.cur.name, s.loading, s.playing, s.rate, !!s.cur.segs].join('|') : '';
+  if (sig === renderMini.last) return; renderMini.last = sig;
   if (!s.cur) { mini.hidden = true; return; }
   mini.hidden = false;
   $('#miniTitle').textContent = s.cur.name;
@@ -1185,13 +1196,18 @@ function renderStories(){
       <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
+function words(t){
+  let out = '', last = 0;
+  for (const m of t.matchAll(/\S+/g)) { out += esc(t.slice(last, m.index)) + `<span class="w" data-s="${m.index}">${esc(m[0])}</span>`; last = m.index + m[0].length; }
+  return out + esc(t.slice(last));
+}
 function openStory(n){
   const s = STORIES.find(x => x.n === n) || STORIES[0];
   currentStory = s;
   $('#storyKicker').textContent = s.n === 0 ? 'Start here' : s.hook;
   $('#h-story').textContent = s.name;
   let gi = 0;
-  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${esc(t)}</span>`).join(' ') + '</p>').join('');
+  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${words(t)}</span>`).join(' ') + '</p>').join('');
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
@@ -1202,9 +1218,12 @@ function openStory(n){
 }
 function syncStory(){
   const st = Player.state, mine = st.cur && currentStory && st.cur.name === currentStory.name;
-  $$('#storyText span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText > p > span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText .w.cur').forEach(w => w.classList.remove('cur'));
+  const sentNow = mine && $('#storyText > p > span.now');
+  if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
-  const now = mine && $('#storyText span.now');
+  const now = sentNow;
   if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
 }
 Player.on(syncStory);
