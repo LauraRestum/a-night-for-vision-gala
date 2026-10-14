@@ -477,12 +477,12 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
         <li><b>Spirit of Philanthropy Award</b> Presented to 6 Meridian</li>
         <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch" data-video="Program Legacy">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
         <li><b>7:30 p.m. &middot; Fund-A-Need</b> Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch">Watch with audio description<span class="vh">: Water Street</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch">Watch with audio description<span class="vh">: Heather's Camp</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch">Watch with audio description<span class="vh">: Level Up</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch" data-video="Water Street">Watch with audio description<span class="vh">: Water Street</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch" data-video="Heather's Camp">Watch with audio description<span class="vh">: Heather's Camp</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch" data-video="Cathy G. Hudson Envision Child Development Center">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch" data-video="Level Up">Watch with audio description<span class="vh">: Level Up</span></a></li>
         <li><b>Chance Drawing Winner</b> Announced at the close of Fund-A-Need</li>
         <li><b>8:30 p.m. &middot; Program Ends</b> Thank you for joining us.</li>
       </ol>
@@ -1375,8 +1375,14 @@ $('#videoList').innerHTML = VIDEOS.map((v, i) =>
     <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
-           : ''}
+           : '<p style="margin:0">Audio described version coming soon.</p>'}
     <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
+
+/* Program page links: promise audio description only where a described version is linked */
+$$('a[data-video]').forEach(a => {
+  const v = VIDEOS.find(x => x.title === a.dataset.video);
+  if (v && !v.ad) a.innerHTML = 'About this video<span class="vh">: ' + esc(v.title) + '. Audio described version coming soon</span>';
+});
 
 /* ============ give ============ */
 if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
