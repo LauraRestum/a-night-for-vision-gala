@@ -1,7 +1,7 @@
 # A Night For Vision: Gala Guest Portal
 
 Guest-facing companion site for the 2026 Envision Gala (Saturday, October 24th, 2026, Wichita Art Museum).
-Static site: one `index.html`, plus `audio/` (ElevenLabs narration, MP3), `img/` (photos cropped from the Through My Eyes banners), and `docs/` (large print program PDF, tagged, linked from the Program page). No build step.
+Static site: one `index.html`, plus `audio/` (ElevenLabs narration, MP3), `img/` (photos cropped from the Through My Eyes banners), and `docs/` (large print program PDF, tagged, linked from the Program page; its editable source and build steps are in `docs/source/`). No build step.
 
 ## How the page is organized
 - Everything lives in `index.html`: styles at the top, markup in the middle, one script at the bottom.
