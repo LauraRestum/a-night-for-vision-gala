@@ -228,6 +228,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
 .zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
 .lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; }
+.lb :focus-visible { outline-color: #fff; } /* the viewer is always black, so the ring must be light in every theme */
+html[data-env-theme="hc"] .lb :focus-visible { outline-color: #FFD400; }
 .lb-top, .lb-bot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem 1rem; color: #fff; background: #000; }
 .lb-top { padding-top: calc(.6rem + env(safe-area-inset-top, 0px)); }
 .lb-bot { padding-bottom: calc(.6rem + env(safe-area-inset-bottom, 0px)); flex-wrap: wrap; }
