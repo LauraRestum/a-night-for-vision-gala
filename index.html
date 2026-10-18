@@ -235,6 +235,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
+.lb :focus-visible { outline-color: #fff; } /* the viewer is always black, so the ring must be white in every theme */
 .lb-ctrls { display: flex; gap: .5rem; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
 .read { font-size: 1.1875rem; line-height: 1.75; }
@@ -1246,7 +1247,7 @@ function openStory(n){
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
@@ -1301,7 +1302,7 @@ const LB = (() => {
   function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
   function show(k){
     i = (k + list.length) % list.length; const im = list[i];
-    img.src = im.src; img.alt = im.alt; sc = 1; tx = 0; ty = 0; apply();
+    img.src = im.src; img.alt = ''; /* the caption below already describes the photo; avoids reading it twice */ sc = 1; tx = 0; ty = 0; apply();
     $('#lbCap').textContent = im.alt + (im.cap ? '. ' + im.cap : '');
     $('#lbCount').textContent = (i + 1) + ' of ' + list.length;
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
