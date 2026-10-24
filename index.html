@@ -302,6 +302,15 @@ p, h2, h3, li, b { overflow-wrap: break-word; }
 html[data-env-zoom] .fp { grid-template-columns: 1fr 1fr; }
 html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
 
+/* Phone turned sideways: keep text and controls clear of the notch or camera cutout */
+.wrap, .top-in { padding-inline: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
+.dock-in { padding-inline: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
+html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in) { padding-inline: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
+.lb-top, .lb-bot { padding-inline: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
+/* the photo viewer is always black, so its focus ring must always be light */
+.lb :focus-visible { outline-color: #FFFFFF; }
+html[data-env-theme="hc"] .lb :focus-visible { outline-color: #FFD400; }
+
 /* Windows forced colors / high contrast modes */
 @media (forced-colors: active) {
   .seg button[aria-pressed="true"], .seg button[aria-selected="true"] { background: Highlight; color: HighlightText; border-color: Highlight; forced-color-adjust: none; }
