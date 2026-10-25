@@ -55,7 +55,7 @@ html[data-env-zoom="4"] { font-size: 175%; }
 html[data-env-zoom="5"] { font-size: 200%; }
 /* very large text on narrow phones: let long words wrap, keep side margins at a fixed size */
 html[data-env-zoom="4"], html[data-env-zoom="5"] { overflow-wrap: anywhere; }
-html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y) { padding-inline: 16px; }
+html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y) { padding-inline: max(16px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
 html[data-env-lines="wide"] body { line-height: 1.9; }
 html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
@@ -70,7 +70,7 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); padding-block: 0 11rem; }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
@@ -85,7 +85,7 @@ button { font: inherit; color: inherit; }
 /* with large text, or a phone turned sideways, a pinned header would cover most of the screen */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 500px) { .top { position: static; } }
-.top-in { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: .5rem;
+.top-in { max-width: 40rem; margin: 0 auto; padding-inline: max(1.25rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); padding-block: .5rem;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .top-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 .size-btn { min-width: 48px; min-height: 44px; border: 1px solid var(--ctl); background: transparent; border-radius: 999px; font-weight: 700; cursor: pointer; padding: 0 .75rem; }
@@ -267,8 +267,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 
 /* Bottom bar and mini player */
 .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100; background: var(--stage); border-top: 1px solid var(--line);
-  padding-bottom: env(safe-area-inset-bottom, 0px); }
-.dock-in { max-width: 40rem; margin: 0 auto; padding-inline: 1rem; }
+  padding-bottom: env(safe-area-inset-bottom, 0px); max-height: 45vh; max-height: 45dvh; overflow-y: auto; overscroll-behavior: contain; } /* large text or a phone on its side: the bar scrolls instead of covering the screen */
+.dock-in { max-width: 40rem; margin: 0 auto; padding-inline: max(1rem, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px)); }
 .mini { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
 .mini-title { min-width: 0; }
 .mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -967,7 +967,7 @@ const live = $('#live');
 /* While a dialog is open, everything behind it is inert for keyboard and screen readers */
 function syncInert(){
   const open = ['#sheetScrim', '#a11yScrim', '#lb'].some(q => !$(q).hidden);
-  ['.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
+  ['.skip', '.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
 }
 function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
 const store = {
