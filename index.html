@@ -234,6 +234,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb-stage { flex: 1; overflow: hidden; position: relative; touch-action: none; display: grid; place-items: center; }
 .lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
+.lb :focus-visible { outline-color: #fff; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
 .lb-ctrls { display: flex; gap: .5rem; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
@@ -271,7 +272,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .dock-in { max-width: 40rem; margin: 0 auto; padding-inline: 1rem; }
 .mini { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
 .mini-title { min-width: 0; }
-.mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-title b { display: block; overflow-wrap: anywhere; }
 .mini-ctrls { display: flex; gap: .4rem; }
 .icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--ctl); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
 .icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
@@ -345,7 +346,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
     <h2 class="vh">Your evening</h2>
-    <ol class="doors">
+    <ol class="doors" role="list">
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
@@ -367,7 +368,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Tonight at a glance</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li><strong>5:30 p.m.</strong> Check in, cocktails, and experiences</li>
           <li><strong>6:30 p.m.</strong> Welcome and the Spirit of Philanthropy Award</li>
           <li><strong>7:00 p.m.</strong> Dinner</li>
@@ -377,7 +378,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       </div>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li>This guide is yours to explore at your own pace. Wander through the evening in any order you like, and your place will be waiting whenever you return.</li>
           <li>Every page can be read aloud. Simply select Listen.</li>
           <li>Nothing will play until you choose, and you may pause at any time from the player at the bottom of your screen.</li>
@@ -408,7 +409,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <button data-mapmode="plan" aria-pressed="false">Map</button>
       </div>
     </div>
-    <div id="mapList"><ul class="spots" id="spotList"></ul></div>
+    <div id="mapList"><ul class="spots" id="spotList" role="list"></ul></div>
     <div id="mapPlan" hidden>
       <div class="plan" id="planGrid"></div>
     </div>
@@ -431,7 +432,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p class="jump-msg" id="jumpMsg" role="status" aria-live="polite"></p>
       </form>
       <div class="row"><button class="btn" id="playAll">Play all stories</button></div>
-      <ul class="stories" id="storyList"></ul>
+      <ul class="stories" id="storyList" role="list"></ul>
     </div>
   </section>
 
@@ -471,7 +472,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
-            <ol class="lineup">
+            <ol class="lineup" role="list">
         <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b> Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
         <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b> Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
@@ -498,7 +499,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" tabindex="0" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -524,7 +525,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
       <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
-    <ul class="videos" id="videoList"></ul>
+    <ul class="videos" id="videoList" role="list"></ul>
   </section>
 
   <!-- GIVE -->
@@ -1176,7 +1177,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b> ${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1228,7 +1229,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b> ${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1246,7 +1247,7 @@ function openStory(n){
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
@@ -1398,6 +1399,7 @@ function trap(container, e){
   const f = $$('button:not([hidden]), a[href], input', container).filter(x => x.offsetParent !== null);
   if (!f.length) return;
   const first = f[0], last = f[f.length - 1];
+  if (!f.includes(document.activeElement)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); return; }
   if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
   else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
 }
