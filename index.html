@@ -340,7 +340,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- HOME -->
   <section data-view="home" aria-labelledby="h-home">
     <div class="hero">
-      <h1 class="display" id="h-home" tabindex="-1">A Night<br>For <em>Vision</em></h1>
+      <h1 class="display" id="h-home" tabindex="-1">A Night <br>For <em>Vision</em></h1>
       <p class="when">Saturday, October 24th, 2026 &middot; Wichita Art Museum</p>
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
@@ -1376,7 +1376,13 @@ $('#videoList').innerHTML = VIDEOS.map((v, i) =>
     <p style="margin:0">${esc(v.who)}</p>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}
+    ${v.ad ? '' : '<p style="margin:0"><strong>Audio described version coming soon.</strong></p>'}
     <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
+/* Program page: only promise audio description where a described version exists */
+$$('.lineup li.video').forEach(li => {
+  const v = VIDEOS.find(x => x.title === $('b', li).textContent.trim()), a = $('a', li);
+  if (v && !v.ad) a.firstChild.textContent = 'About this video';
+});
 
 /* ============ give ============ */
 if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
@@ -1441,6 +1447,9 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* skip link: move focus without leaving #main in the address bar (keeps Back and reload sensible) */
+$('.skip').addEventListener('click', e => { e.preventDefault(); $('#main').focus(); });
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
