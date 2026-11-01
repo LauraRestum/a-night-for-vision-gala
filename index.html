@@ -235,6 +235,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
+/* the photo viewer is always black, so its focus ring must always be light (the light theme's ring is dark) */
+.lb :focus-visible { outline-color: #FFD400; }
 .lb-ctrls { display: flex; gap: .5rem; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
 .read { font-size: 1.1875rem; line-height: 1.75; }
@@ -291,7 +293,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 
 /* Large text, short screens: nothing sticky should eat the viewport */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
-@media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
+@media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } .dock { position: static; } .wrap { padding-block-end: 2rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
@@ -319,6 +321,7 @@ html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
 html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html[data-env-motion="reduce"] *::after { animation: none !important; transition: none !important; }
 </style>
 
+<noscript><p style="margin:0;padding:1rem 1.25rem;background:#fff;color:#000;font:700 1.125rem/1.5 Arial,sans-serif">This guide needs JavaScript to show the evening's pages. Please turn it on and reload. The large print program is available without it: <a href="docs/2026_Gala_Program_LargePrint.pdf" style="color:#000">Large print program (PDF)</a>.</p></noscript>
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="top">
