@@ -227,7 +227,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .gallery figcaption { margin-top: .35rem; font-size: 1rem; }
 .zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
 .zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
-.lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; }
+.lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; --focus: #FFFFFF; }
+html[data-env-theme="hc"] .lb { --focus: #FFD400; }
 .lb-top, .lb-bot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem 1rem; color: #fff; background: #000; }
 .lb-top { padding-top: calc(.6rem + env(safe-area-inset-top, 0px)); }
 .lb-bot { padding-bottom: calc(.6rem + env(safe-area-inset-bottom, 0px)); flex-wrap: wrap; }
@@ -560,7 +561,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
-        <button class="icon-btn" id="miniRate" aria-label="Reading speed 1 times">1&times;</button>
+        <button class="icon-btn" id="miniRate" aria-label="1&times; reading speed. Change speed">1&times;</button>
         <button class="icon-btn" id="miniClose" aria-label="Stop and close player">&times;</button>
       </div>
     </div>
@@ -1114,7 +1115,7 @@ function renderMini(){
   $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
   $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
   $('#miniRate').textContent = s.rate + '×';
-  $('#miniRate').setAttribute('aria-label', 'Reading speed ' + s.rate + ' times. Change speed');
+  $('#miniRate').setAttribute('aria-label', s.rate + '\u00d7 reading speed. Change speed');
   $('#miniBack').setAttribute('aria-label', s.cur.segs ? 'Back 15 seconds' : 'Back one sentence');
 }
 $('#miniPlay').onclick = () => Player.toggle();
@@ -1170,16 +1171,18 @@ function route(){
 }
 let routed = false;
 window.addEventListener('hashchange', route);
+/* choosing the page you are already on fires no hashchange: still move focus to its heading so screen reader users hear something */
+$('.tabs').addEventListener('click', e => { const a = e.target.closest('a'); if (a && a.getAttribute('href') === '#' + ((location.hash || '#home').slice(1))) route(); });
 
 /* ============ map ============ */
 let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}" aria-haspopup="dialog"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
-  const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
+  const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}" aria-haspopup="dialog"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
   $('#planGrid').innerHTML =
     `<p class="note">Upstairs, left to right. A sketch, not to scale.</p>
      <div class="fp" role="group" aria-label="Upstairs floor plan, left to right">
