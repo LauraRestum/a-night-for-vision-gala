@@ -345,7 +345,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
     <h2 class="vh">Your evening</h2>
-    <ol class="doors">
+    <ol role="list" class="doors">
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
@@ -367,7 +367,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Tonight at a glance</h2>
-        <ul class="tips">
+        <ul role="list" class="tips">
           <li><strong>5:30 p.m.</strong> Check in, cocktails, and experiences</li>
           <li><strong>6:30 p.m.</strong> Welcome and the Spirit of Philanthropy Award</li>
           <li><strong>7:00 p.m.</strong> Dinner</li>
@@ -377,7 +377,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       </div>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
-        <ul class="tips">
+        <ul role="list" class="tips">
           <li>This guide is yours to explore at your own pace. Wander through the evening in any order you like, and your place will be waiting whenever you return.</li>
           <li>Every page can be read aloud. Simply select Listen.</li>
           <li>Nothing will play until you choose, and you may pause at any time from the player at the bottom of your screen.</li>
@@ -408,7 +408,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <button data-mapmode="plan" aria-pressed="false">Map</button>
       </div>
     </div>
-    <div id="mapList"><ul class="spots" id="spotList"></ul></div>
+    <div id="mapList"><ul role="list" class="spots" id="spotList"></ul></div>
     <div id="mapPlan" hidden>
       <div class="plan" id="planGrid"></div>
     </div>
@@ -431,7 +431,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p class="jump-msg" id="jumpMsg" role="status" aria-live="polite"></p>
       </form>
       <div class="row"><button class="btn" id="playAll">Play all stories</button></div>
-      <ul class="stories" id="storyList"></ul>
+      <ul role="list" class="stories" id="storyList"></ul>
     </div>
   </section>
 
@@ -471,12 +471,12 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
-            <ol class="lineup">
+            <ol role="list" class="lineup">
         <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b> Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
         <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b> Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
         <li><b>Spirit of Philanthropy Award</b> Presented to 6 Meridian</li>
-        <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
+        <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#pane-menu" data-tab="tab-menu">See the menu</a></li>
         <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
         <li><b>7:30 p.m. &middot; Fund-A-Need</b> Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
         <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch">Watch with audio description<span class="vh">: Water Street</span></a></li>
@@ -524,7 +524,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
       <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
-    <ul class="videos" id="videoList"></ul>
+    <ul role="list" class="videos" id="videoList"></ul>
   </section>
 
   <!-- GIVE -->
@@ -967,7 +967,7 @@ const live = $('#live');
 /* While a dialog is open, everything behind it is inert for keyboard and screen readers */
 function syncInert(){
   const open = ['#sheetScrim', '#a11yScrim', '#lb'].some(q => !$(q).hidden);
-  ['.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
+  ['.skip', '.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
 }
 function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
 const store = {
@@ -1155,7 +1155,9 @@ function route(){
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
   if (!VIEWS.includes(view)) view = 'home';
-  closeSheet(true);
+  /* the browser or Android Back button must not leave a dialog open over the new page */
+  closeSheet(true); LB.close(true);
+  if (!$('#a11yScrim').hidden) { $('#a11yScrim').hidden = true; syncInert(); }
   $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
   if (view === 'story') openStory(storyN);
   if (view === 'stories') renderStories();
@@ -1246,7 +1248,7 @@ function openStory(n){
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
@@ -1299,16 +1301,16 @@ const LB = (() => {
     img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`;
   }
   function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
-  function show(k){
+  function show(k, say){
     i = (k + list.length) % list.length; const im = list[i];
-    img.src = im.src; img.alt = im.alt; sc = 1; tx = 0; ty = 0; apply();
+    img.src = im.src; img.alt = ''; /* the caption below carries the description, so it is not read twice */ sc = 1; tx = 0; ty = 0; apply();
     $('#lbCap').textContent = im.alt + (im.cap ? '. ' + im.cap : '');
     $('#lbCount').textContent = (i + 1) + ' of ' + list.length;
-    announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
+    if (say !== false) announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
-  function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
-  $('#lbClose').onclick = close;
+  function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k, false); $('#lbClose').focus(); }
+  function close(silent){ if (box.hidden) return; box.hidden = true; syncInert(); document.body.style.overflow = ''; if (!silent && ret) ret.focus(); }
+  $('#lbClose').onclick = () => close();
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbPrev').onclick = () => show(i - 1);
@@ -1339,7 +1341,7 @@ const LB = (() => {
     else if (e.key === '-') setScale(sc / 1.5);
     else if (e.key === 'Tab') trap(box, e);
   });
-  return { open };
+  return { open, close };
 })();
 document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
@@ -1374,9 +1376,16 @@ $('#videoList').innerHTML = VIDEOS.map((v, i) =>
   `<li class="panel video-card"><h2 class="h2">${esc(v.title)}</h2>
     <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
+    ${v.ad ? '' : '<p style="margin:0"><strong>Audio described version:</strong> coming soon.</p>'}
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}
     <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
+
+/* Program page links only promise audio description where a described version exists */
+$$('.lineup li.video').forEach(li => {
+  const v = VIDEOS.find(x => x.title === $('b', li).textContent.trim()), a = $('a', li);
+  if (v && !v.ad && a) a.innerHTML = 'Video details<span class="vh">: ' + esc(v.title) + '</span>';
+});
 
 /* ============ give ============ */
 if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
