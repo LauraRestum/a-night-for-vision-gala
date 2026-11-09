@@ -1246,7 +1246,7 @@ function openStory(n){
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
@@ -1441,6 +1441,9 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* skip link: move focus to the main content without changing the address (keeps Back and reload working) */
+$('.skip').addEventListener('click', e => { e.preventDefault(); $('#main').focus(); });
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
