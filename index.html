@@ -61,7 +61,7 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--top-h, 5rem) + 1rem); scroll-padding-bottom: calc(var(--dock-h, 9rem) + 1rem); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -70,7 +70,7 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 max(11rem, calc(var(--dock-h, 0px) + 2rem)); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
@@ -240,6 +240,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .read { font-size: 1.1875rem; line-height: 1.75; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
+.read .w { transition: none; } /* the current word swaps instantly: a fade passes through dark text on a dark ground */
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
 .read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
@@ -291,7 +292,9 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 
 /* Large text, short screens: nothing sticky should eat the viewport */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
-@media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
+@media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; }
+  .dock-in { display: flex; flex-wrap: wrap; align-items: center; column-gap: .75rem; }
+  .mini { flex: 1 1 auto; border-bottom: 0; padding-block: .3rem; } .tabs { flex: 1 1 12rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
@@ -556,7 +559,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
 <div class="dock">
   <div class="dock-in">
     <div class="mini" id="mini" role="region" aria-label="Audio player" hidden>
-      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span id="miniSub"></span></div>
+      <div class="mini-title"><span class="vh">Now playing: </span><b id="miniTitle"></b> <span id="miniSub"></span></div>
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
@@ -1176,7 +1179,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b> ${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1228,7 +1231,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b> ${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1258,8 +1261,13 @@ function syncStory(){
   const sentNow = mine && $('#storyText > p > span.now');
   if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
-  const now = sentNow;
-  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
+  /* keep the sentence in view; if it is taller than the space between the bars (large text, phone sideways), follow the word */
+  if (sentNow && st.playing) {
+    const topH = parseFloat(root.style.getPropertyValue('--top-h')) || 0, dockH = parseFloat(root.style.getPropertyValue('--dock-h')) || 180;
+    const room = innerHeight - topH - dockH - 32, sr = sentNow.getBoundingClientRect();
+    const now = (sr.height > room && $('.w.cur', sentNow)) || sentNow, r = now.getBoundingClientRect();
+    if (r.top < topH + 16 || r.bottom > innerHeight - dockH - 16) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' });
+  }
 }
 Player.on(syncStory);
 function playStory(s, chain){
@@ -1419,7 +1427,16 @@ function applyPrefs(){
   const z = +(prefs.zoom || 1);
   $('#textUp').setAttribute('aria-disabled', String(z >= 5));
   $('#textDown').setAttribute('aria-disabled', String(z <= 1));
+  syncChrome();
 }
+/* Keep focused and highlighted items clear of the pinned header and bottom bar, at any text size */
+function syncChrome(){
+  const top = $('.top'), dock = $('.dock');
+  root.style.setProperty('--dock-h', dock.offsetHeight + 'px');
+  root.style.setProperty('--top-h', (getComputedStyle(top).position === 'sticky' ? top.offsetHeight : 0) + 'px');
+}
+if ('ResizeObserver' in window) { const ro = new ResizeObserver(syncChrome); ro.observe($('.top')); ro.observe($('.dock')); }
+addEventListener('resize', syncChrome);
 let a11yReturn = null;
 function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; syncInert(); $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
 function closeA11y(){ $('#a11yScrim').hidden = true; syncInert(); if (a11yReturn) a11yReturn.focus(); }
