@@ -166,7 +166,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
   display: grid; place-items: center; font-weight: 700; }
 .plan .zone b { font-weight: 600; }
 .plan .zone.span2 { grid-column: span 2; }
-.plan .note { grid-column: span 2; margin: 0; }
+.plan .note { grid-column: 1 / -1; margin: 0; }
 .plan { grid-template-columns: 1fr; }
 .fp { display: grid; grid-template-columns: 1fr .9fr 1.25fr 1fr; gap: .4rem; align-items: stretch; }
 .room { border: 2px solid var(--ctl); background: transparent; border-radius: 4px; min-height: 7rem; padding: .5rem .4rem;
@@ -224,6 +224,9 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .gallery { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; margin-bottom: 1.5rem; }
 .gallery figure { margin: 0; min-width: 0; }
 .gallery img { display: block; width: 100%; height: auto; border-radius: 4px; background: var(--surface); }
+/* hold the photo's space while it loads so the text below does not jump (screen magnifiers, slow Wi-Fi) */
+.gallery img { aspect-ratio: auto 903 / 684; }
+.gallery img[src$="-photo.jpg"], .gallery img[src$="-vision.jpg"] { aspect-ratio: auto 903 / 1470; }
 .gallery figcaption { margin-top: .35rem; font-size: 1rem; }
 .zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
 .zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
@@ -346,12 +349,12 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     </div>
     <h2 class="vh">Your evening</h2>
     <ol class="doors">
-      <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span> <span class="d">The evening in order, the program book, and a large print PDF</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span> <span class="d">Tonight's five videos, with audio description where available</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
-      <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span> <span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span><span class="vh">. </span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span><span class="vh">. </span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span><span class="vh">. </span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#program"><span class="n" aria-hidden="true">4</span><span><span class="t">Tonight's Program</span><span class="vh">. </span> <span class="d">The evening in order, the program book, and a large print PDF</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#watch"><span class="n" aria-hidden="true">5</span><span><span class="t">Watch the Stories</span><span class="vh">. </span> <span class="d">Tonight's five videos, with audio description where available</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
+      <li><a class="door" href="#give"><span class="n" aria-hidden="true">6</span><span><span class="t">Give</span><span class="vh">. </span> <span class="d">Fund-A-Need and the Aruba chance drawing</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
     </ol>
   </section>
 
@@ -1176,7 +1179,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b><span class="vh">. </span>${esc(s.short)}<span class="vh">. </span> <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1228,7 +1231,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b><span class="vh">, </span>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1442,9 +1445,17 @@ $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
 
+/* Skip to content: focus this page's heading without changing the address (a #main address would
+   send the guest back to Home if the phone reloads the tab) */
+$('.skip').addEventListener('click', e => {
+  e.preventDefault();
+  const h = $('h1', $('[data-view]:not([hidden])')) || $('#main');
+  h.focus({ preventScroll: true }); window.scrollTo(0, 0);
+});
+
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
-if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
+if (!location.hash || location.hash === '#main') { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
 route();
 </script>
 
