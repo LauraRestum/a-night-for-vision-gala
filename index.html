@@ -236,6 +236,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
 .lb-ctrls { display: flex; gap: .5rem; }
+.lb :focus-visible { outline-color: #FFFFFF; } /* the photo viewer is always black, whatever the theme */
+html[data-env-theme="hc"] .lb :focus-visible { outline-color: #FFD400; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
 .read { font-size: 1.1875rem; line-height: 1.75; }
 .read span { border-radius: 3px; transition: background .2s; }
@@ -293,6 +295,12 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* large text: player title on its own row above the controls, so it is not squeezed into a one-letter column */
+@media (max-width: 40rem) {
+  html[data-env-zoom="3"] .mini, html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; }
+}
+html[data-env-zoom="3"] .mini-title, html[data-env-zoom="4"] .mini-title, html[data-env-zoom="5"] .mini-title { display: flex; flex-wrap: wrap; gap: 0 .5rem; align-items: baseline; }
+@media (max-height: 30rem) { .mini { padding-block: .4rem; } }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -1164,11 +1172,17 @@ function route(){
   const sec = $('[data-view="' + view + '"]'), h1 = $('h1', sec);
   document.title = (view === 'home' ? '' : (h1.textContent + ' | ')) + 'A Night For Vision';
   window.scrollTo(0, 0);
-  if (routed) h1.focus({ preventScroll: true });
-  routed = true;
+  /* a Back link returns focus to the item the guest came from, so they keep their place in the list;
+     everywhere else focus goes to the page heading so screen readers announce the new page */
+  const back = goingBack; goingBack = false;
+  const from = !back ? null : prevView === 'story' && view === 'stories' && currentStory ? $('#storyList a[href="#story' + currentStory.n + '"]')
+    : view === 'home' && prevView && prevView !== 'home' ? $('.doors a[href="#' + (prevView === 'story' ? 'stories' : prevView) + '"]') : null;
+  if (routed) { if (from) from.focus(); else h1.focus({ preventScroll: true }); }
+  routed = true; prevView = view;
   store.set('gala-last', h);
 }
-let routed = false;
+let routed = false, prevView = null, goingBack = false;
+document.addEventListener('click', e => { if (e.target.closest('a.back')) goingBack = true; });
 window.addEventListener('hashchange', route);
 
 /* ============ map ============ */
