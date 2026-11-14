@@ -293,6 +293,10 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* if the bottom bar would cover too much of a small or sideways screen, it joins the end of the page instead of floating */
+html.dock-flow .dock { position: static; }
+html.dock-flow .wrap { padding-block-end: 2rem; }
+html.dock-flow { scroll-padding-bottom: 0; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -340,7 +344,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
   <!-- HOME -->
   <section data-view="home" aria-labelledby="h-home">
     <div class="hero">
-      <h1 class="display" id="h-home" tabindex="-1">A Night<br>For <em>Vision</em></h1>
+      <h1 class="display" id="h-home" tabindex="-1">A Night <br>For <em>Vision</em></h1>
       <p class="when">Saturday, October 24th, 2026 &middot; Wichita Art Museum</p>
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
@@ -1170,6 +1174,7 @@ function route(){
 }
 let routed = false;
 window.addEventListener('hashchange', route);
+$('.skip').addEventListener('click', e => { e.preventDefault(); $('#main').focus(); });
 
 /* ============ map ============ */
 let floor = 'all', mapMode = 'list';
@@ -1220,7 +1225,7 @@ function closeSheet(silent){
   if (!silent && sheetReturn) sheetReturn.focus();
 }
 $('#sheetClose').onclick = () => closeSheet();
-$('#sheetScrim').addEventListener('click', e => { if (e.target.id === 'sheetScrim' || e.target.closest('a')) closeSheet(true); });
+$('#sheetScrim').addEventListener('click', e => { if (e.target.closest('a')) closeSheet(true); else if (e.target.id === 'sheetScrim') closeSheet(); });
 
 /* ============ stories ============ */
 const heard = new Set(store.get('gala-heard', []));
@@ -1442,8 +1447,18 @@ $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
 
+/* ============ bottom bar fit ============ */
+/* flow below the content when the bar covers over 40% of the screen; back to pinned under a third (no flicker as phone toolbars slide) */
+function fitDock(){
+  const share = $('.dock').offsetHeight / (innerHeight || 1), on = root.classList.contains('dock-flow');
+  if (!on && share > 0.4) root.classList.add('dock-flow');
+  else if (on && share < 0.33) root.classList.remove('dock-flow');
+}
+window.addEventListener('resize', fitDock);
+if ('ResizeObserver' in window) new ResizeObserver(fitDock).observe($('.dock'));
+
 /* ============ boot ============ */
-applyPrefs(); renderMap(); renderStories();
+applyPrefs(); renderMap(); renderStories(); fitDock();
 if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
 route();
 </script>
