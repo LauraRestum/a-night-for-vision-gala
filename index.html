@@ -301,6 +301,29 @@ p, h2, h3, li, b { overflow-wrap: break-word; }
 @media (max-width: 34rem) { .fp { grid-template-columns: 1fr 1fr; } .fp-enter { grid-column: 1 / -1; } }
 html[data-env-zoom] .fp { grid-template-columns: 1fr 1fr; }
 html[data-env-zoom] .fp-enter { grid-column: 1 / -1; }
+/* Player at large text: title on its own line above the buttons, so neither gets squeezed and the
+   bar stays a fraction of the screen (it covered almost all of a small phone at 200%) */
+html[data-env-zoom="3"] .mini, html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; }
+html[data-env-zoom="3"] .mini-title b, html[data-env-zoom="4"] .mini-title b, html[data-env-zoom="5"] .mini-title b { display: inline; margin-right: .5rem; }
+html[data-env-zoom="4"] .tabs, html[data-env-zoom="5"] .tabs { padding-block: .4rem; }
+/* Short screens (phone sideways, or a browser zoomed in): player and Home/Give share one row */
+@media (max-height: 30em) and (min-width: 30em) {
+  .dock-in { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1rem; max-width: none; }
+  .mini { flex: 999 1 18rem; border-bottom: 0; padding-block: .4rem; }
+  .tabs { flex: 1 1 14rem; padding-block: .4rem; }
+}
+/* Very short screens, or short screens with very large text: a pinned bar would hide the page,
+   so it sits at the end of the page instead (the header already does the same) */
+@media (max-height: 20em) {
+  .dock { position: static; }
+  .wrap { padding-block-end: 2rem; }
+  html { scroll-padding-bottom: 0; }
+}
+@media (max-height: 30em) {
+  html[data-env-zoom="4"] .dock, html[data-env-zoom="5"] .dock { position: static; }
+  html[data-env-zoom="4"] .wrap, html[data-env-zoom="5"] .wrap { padding-block-end: 2rem; }
+  html[data-env-zoom="4"], html[data-env-zoom="5"] { scroll-padding-bottom: 0; }
+}
 
 /* Windows forced colors / high contrast modes */
 @media (forced-colors: active) {
@@ -560,7 +583,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
-        <button class="icon-btn" id="miniRate" aria-label="Reading speed 1 times">1&times;</button>
+        <button class="icon-btn" id="miniRate" aria-label="1&times; speed. Change speed">1&times;</button>
         <button class="icon-btn" id="miniClose" aria-label="Stop and close player">&times;</button>
       </div>
     </div>
@@ -1114,7 +1137,7 @@ function renderMini(){
   $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
   $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
   $('#miniRate').textContent = s.rate + '×';
-  $('#miniRate').setAttribute('aria-label', 'Reading speed ' + s.rate + ' times. Change speed');
+  $('#miniRate').setAttribute('aria-label', s.rate + '× speed. Change speed');
   $('#miniBack').setAttribute('aria-label', s.cur.segs ? 'Back 15 seconds' : 'Back one sentence');
 }
 $('#miniPlay').onclick = () => Player.toggle();
@@ -1147,7 +1170,7 @@ if ('mediaSession' in navigator) {
 
 /* ============ router ============ */
 const VIEWS = ['home','welcome','map','stories','story','program','watch','give'];
-let currentStory = null;
+let currentStory = null, storySents = [];
 function route(){
   let h = (location.hash || '#home').slice(1);
   if (h === 'main') return;
@@ -1241,8 +1264,10 @@ function openStory(n){
   currentStory = s;
   $('#storyKicker').textContent = s.n === 0 ? 'Start here' : s.hook;
   $('#h-story').textContent = s.name;
-  let gi = 0;
-  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${words(t)}</span>`).join(' ') + '</p>').join('');
+  /* plain text per sentence; word spans are added only to the sentence being read (see syncStory),
+     so iOS VoiceOver swipes through a story by sentence rather than stopping on every word */
+  storySents = [];
+  $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${storySents.push(t) - 1}">${esc(t)}</span>`).join(' ') + '</p>').join('');
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
@@ -1253,7 +1278,12 @@ function openStory(n){
 }
 function syncStory(){
   const st = Player.state, mine = st.cur && currentStory && st.cur.name === currentStory.name;
-  $$('#storyText > p > span').forEach(sp => sp.classList.toggle('now', !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0))));
+  $$('#storyText > p > span').forEach(sp => {
+    const on = !!(mine && +sp.dataset.i === st.idx && (st.playing || st.idx > 0));
+    sp.classList.toggle('now', on);
+    if (on && !sp.dataset.w) { sp.innerHTML = words(storySents[+sp.dataset.i]); sp.dataset.w = '1'; }
+    else if (!on && sp.dataset.w) { sp.textContent = storySents[+sp.dataset.i]; delete sp.dataset.w; }
+  });
   $$('#storyText .w.cur').forEach(w => w.classList.remove('cur'));
   const sentNow = mine && $('#storyText > p > span.now');
   if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
