@@ -61,7 +61,7 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--top-h, 5rem) + 1rem); scroll-padding-bottom: calc(var(--dock-h, 9rem) + 1rem); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -70,14 +70,14 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 max(11rem, calc(var(--dock-h, 0px) + 2rem)); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 .vh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.skip { position: absolute; left: 1rem; top: -100px; z-index: 300; background: var(--red); color: var(--on-red);
+.skip { position: absolute; left: 1rem; top: 0; transform: translateY(-120%); z-index: 300; background: var(--red); color: var(--on-red);
   padding: .75rem 1.25rem; font-weight: 700; text-decoration: none; border-radius: 2px; }
-.skip:focus { top: calc(env(safe-area-inset-top, 0px) + .75rem); }
+.skip:focus { transform: none; top: calc(env(safe-area-inset-top, 0px) + .75rem); }
 
 /* Header */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--stage);
@@ -85,6 +85,7 @@ button { font: inherit; color: inherit; }
 /* with large text, or a phone turned sideways, a pinned header would cover most of the screen */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 500px) { .top { position: static; } }
+@media (max-width: 24rem) { html[data-env-zoom="2"] .top { position: static; } }
 .top-in { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: .5rem;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; }
 .top-tools { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
@@ -272,6 +273,9 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .mini { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
 .mini-title { min-width: 0; }
 .mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-env-zoom] .mini-title b { white-space: normal; overflow-wrap: break-word; }
+@media (max-width: 40rem) { html[data-env-zoom] .mini { grid-template-columns: minmax(0, 1fr); gap: .5rem; } }
+.mini-ctrls { flex-wrap: wrap; }
 .mini-ctrls { display: flex; gap: .4rem; }
 .icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--ctl); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
 .icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
@@ -292,7 +296,12 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 /* Large text, short screens: nothing sticky should eat the viewport */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
-html[data-env-zoom] .mini-title b { white-space: normal; }
+/* phone on its side: player and Home/Give share one row so the dock leaves room to read */
+@media (max-height: 30rem) and (min-width: 40rem) {
+  .dock-in { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1rem; }
+  .mini { flex: 1 1 24rem; min-width: 0; border-bottom: 0; }
+  .tabs { flex: 1 0 auto; }
+}
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -468,7 +477,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <button role="tab" id="tab-menu" aria-controls="pane-menu" aria-selected="false" tabindex="-1">Menu</button>
       <button role="tab" id="tab-book" aria-controls="pane-book" aria-selected="false" tabindex="-1">Program book</button>
     </div>
-    <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
+    <div role="tabpanel" tabindex="0" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
             <ol class="lineup">
@@ -487,7 +496,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <li><b>8:30 p.m. &middot; Program Ends</b> Thank you for joining us.</li>
       </ol>
     </div>
-    <div role="tabpanel" id="pane-menu" aria-labelledby="tab-menu" data-listen-scope="menu" hidden>
+    <div role="tabpanel" tabindex="0" id="pane-menu" aria-labelledby="tab-menu" data-listen-scope="menu" hidden>
       <h2 class="vh">Menu</h2>
       <div class="stack">
         <button class="btn ghost" data-listen="program">Listen to the menu</button>
@@ -498,7 +507,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" tabindex="0" id="pane-book" aria-labelledby="tab-book" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -961,6 +970,18 @@ const PAGE_AUDIO = { welcome: 'audio/01-welcome.mp3', aruba: 'audio/08-aruba-cha
 const GIVE_URL = 'https://e.givesmart.com/events/Q5v/'; // paste the giving link here
 
 /* ============ helpers ============ */
+/* Track how much of the screen the pinned header and the bottom dock cover, so focused items and
+   the read-along sentence are never hidden behind them (they grow with larger text). */
+const chromeH = { top: 0, dock: 0 };
+function measureChrome(){
+  const top = document.querySelector('.top'), dock = document.querySelector('.dock');
+  chromeH.top = getComputedStyle(top).position === 'static' ? 0 : top.offsetHeight;
+  chromeH.dock = dock.offsetHeight;
+  document.documentElement.style.setProperty('--top-h', chromeH.top + 'px');
+  document.documentElement.style.setProperty('--dock-h', chromeH.dock + 'px');
+}
+if ('ResizeObserver' in window) { const ro = new ResizeObserver(measureChrome); ro.observe(document.querySelector('.top')); ro.observe(document.querySelector('.dock')); }
+window.addEventListener('resize', measureChrome);
 const $ = (s, el=document) => el.querySelector(s);
 const $$ = (s, el=document) => [...el.querySelectorAll(s)];
 const live = $('#live');
@@ -1259,7 +1280,7 @@ function syncStory(){
   if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
   const now = sentNow;
-  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
+  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < chromeH.top + 16 || r.bottom > innerHeight - chromeH.dock - 16) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
 }
 Player.on(syncStory);
 function playStory(s, chain){
