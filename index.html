@@ -54,7 +54,7 @@ html[data-env-zoom="3"] { font-size: 150%; }
 html[data-env-zoom="4"] { font-size: 175%; }
 html[data-env-zoom="5"] { font-size: 200%; }
 /* very large text on narrow phones: let long words wrap, keep side margins at a fixed size */
-html[data-env-zoom="4"], html[data-env-zoom="5"] { overflow-wrap: anywhere; }
+html[data-env-zoom="4"], html[data-env-zoom="5"] { overflow-wrap: anywhere; -webkit-hyphens: auto; hyphens: auto; }
 html[data-env-zoom="4"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y), html[data-env-zoom="5"] :is(.wrap, .top-in, .dock-in, .panel, .story-card, .spot, .sheet, .a11y) { padding-inline: 16px; }
 html[data-env-lines="wide"] body { line-height: 1.9; }
 html[data-env-lines="wide"] .read { line-height: 2.1; }
@@ -293,6 +293,17 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* Large text: stack the player title above its buttons so the bar never fills a phone screen */
+html[data-env-zoom] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; }
+html[data-env-zoom] .mini-title { overflow-wrap: break-word; }
+html[data-env-zoom] .mini-title b { display: inline; }
+html[data-env-zoom] #miniSub { margin-left: .5em; }
+html[data-env-zoom] .mini-ctrls { justify-content: space-between; }
+@media (max-height: 30rem) {
+  html[data-env-zoom] .mini { grid-template-columns: minmax(0, 1fr) auto; }
+  html[data-env-zoom] .mini-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html[data-env-zoom] .mini-title b { white-space: nowrap; }
+}
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -477,12 +488,12 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
         <li><b>Spirit of Philanthropy Award</b> Presented to 6 Meridian</li>
         <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch" data-video="0">About this video<span class="vh">: Program Legacy</span></a></li>
         <li><b>7:30 p.m. &middot; Fund-A-Need</b> Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch">Watch with audio description<span class="vh">: Water Street</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch">Watch with audio description<span class="vh">: Heather's Camp</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch">Watch with audio description<span class="vh">: Level Up</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch" data-video="1">About this video<span class="vh">: Water Street</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch" data-video="2">About this video<span class="vh">: Heather's Camp</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch" data-video="3">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch" data-video="4">About this video<span class="vh">: Level Up</span></a></li>
         <li><b>Chance Drawing Winner</b> Announced at the close of Fund-A-Need</li>
         <li><b>8:30 p.m. &middot; Program Ends</b> Thank you for joining us.</li>
       </ol>
@@ -1170,6 +1181,8 @@ function route(){
 }
 let routed = false;
 window.addEventListener('hashchange', route);
+/* Skip link: move focus without adding a #main history entry (keeps Back and reload on the current page) */
+$('.skip').addEventListener('click', e => { e.preventDefault(); $('#main').focus(); });
 
 /* ============ map ============ */
 let floor = 'all', mapMode = 'list';
@@ -1377,6 +1390,9 @@ $('#videoList').innerHTML = VIDEOS.map((v, i) =>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
            : ''}
     <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
+
+/* program lineup: only promise audio description where a described version exists */
+$$('[data-video]').forEach(a => { const v = VIDEOS[+a.dataset.video]; if (v) a.firstChild.textContent = v.ad ? 'Watch with audio description' : 'About this video'; });
 
 /* ============ give ============ */
 if (GIVE_URL) { const g = $('#giveLink'); g.href = GIVE_URL; g.target = '_blank'; g.rel = 'noopener'; g.removeAttribute('aria-disabled'); }
