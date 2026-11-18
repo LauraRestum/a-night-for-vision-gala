@@ -61,7 +61,10 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: calc(var(--dock-h, 10rem) + 1rem); }
+/* header is not pinned at large text sizes or on short screens, so focus only needs room for the bottom bar */
+html[data-env-zoom="3"], html[data-env-zoom="4"], html[data-env-zoom="5"] { scroll-padding-top: 1rem; }
+@media (max-height: 500px) { html { scroll-padding-top: 1rem; } }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -70,14 +73,14 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 calc(var(--dock-h, 10rem) + 2rem); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 .vh { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-.skip { position: absolute; left: 1rem; top: -100px; z-index: 300; background: var(--red); color: var(--on-red);
+.skip { position: absolute; left: 1rem; top: 0; transform: translateY(-120%); z-index: 300; background: var(--red); color: var(--on-red);
   padding: .75rem 1.25rem; font-weight: 700; text-decoration: none; border-radius: 2px; }
-.skip:focus { top: calc(env(safe-area-inset-top, 0px) + .75rem); }
+.skip:focus { top: calc(env(safe-area-inset-top, 0px) + .75rem); transform: none; } /* hidden by its own height, so large text never peeks out */
 
 /* Header */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; background: var(--stage);
@@ -293,6 +296,12 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* very large text: the player title gets its own full-width row instead of one letter per line */
+@media (max-width: 40rem) { html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; } }
+html[data-env-zoom="4"] .mini-title, html[data-env-zoom="5"] .mini-title { overflow-wrap: normal; }
+html[data-env-zoom="4"] .mini-title b, html[data-env-zoom="5"] .mini-title b { display: inline; }
+html[data-env-zoom="4"] #miniSub::before, html[data-env-zoom="5"] #miniSub::before { content: " \00B7  "; content: " \00B7  " / ""; }
+html[data-env-zoom="4"] .tabs, html[data-env-zoom="5"] .tabs { padding-block: .4rem; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -1155,7 +1164,8 @@ function route(){
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
   if (!VIEWS.includes(view)) view = 'home';
-  closeSheet(true);
+  /* the phone's back gesture changes the page: close any open dialog so it is not left over the new page */
+  closeSheet(true); LB.close(true); if (!$('#a11yScrim').hidden) { $('#a11yScrim').hidden = true; syncInert(); }
   $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
   if (view === 'story') openStory(storyN);
   if (view === 'stories') renderStories();
@@ -1307,8 +1317,8 @@ const LB = (() => {
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
   function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
-  $('#lbClose').onclick = close;
+  function close(silent){ if (box.hidden) return; box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret && silent !== true) ret.focus(); }
+  $('#lbClose').onclick = () => close();
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbPrev').onclick = () => show(i - 1);
@@ -1339,7 +1349,7 @@ const LB = (() => {
     else if (e.key === '-') setScale(sc / 1.5);
     else if (e.key === 'Tab') trap(box, e);
   });
-  return { open };
+  return { open, close };
 })();
 document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
@@ -1441,6 +1451,10 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* keep page padding and focus scrolling clear of the bottom bar, whatever its height */
+(() => { const d = $('.dock'), set = () => root.style.setProperty('--dock-h', d.offsetHeight + 'px');
+  if ('ResizeObserver' in window) new ResizeObserver(set).observe(d); set(); })();
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
