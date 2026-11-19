@@ -240,6 +240,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .read { font-size: 1.1875rem; line-height: 1.75; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
+/* Words swap background and text color in one step, so the word just spoken never fades through light-on-light. */
+.read .w { transition: font-size .25s ease; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
 .read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
@@ -251,7 +253,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lineup li::before { content: ""; position: absolute; left: -8px; top: .45rem; width: 14px; height: 14px; border-radius: 50%; background: var(--stage); border: 2px solid var(--red); }
 .lineup li.video::before { background: var(--red); }
 .lineup b { display: block; font-size: 1.125rem; }
-.lineup a { font-weight: 600; }
+.lineup a { font-weight: 600; padding-block: .75rem; } /* taller tap area on phones; inline padding does not move the text */
 .tier { display: grid; gap: .25rem; padding-block: 1rem; border-bottom: 1px solid var(--line); }
 .tier h3 { font-size: 1rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--red-text); }
 .tier p { margin: 0; font-size: 1.125rem; }
