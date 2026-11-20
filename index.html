@@ -62,6 +62,9 @@ html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+/* when the script has measured the pinned header and bottom bar, keep focus clear of both exactly */
+html[data-env-measured] { scroll-padding-top: calc(var(--top-h, 0px) + 1rem); scroll-padding-bottom: calc(var(--dock-h, 0px) + 1rem); }
+html[data-env-measured] .wrap { padding-bottom: calc(var(--dock-h, 0px) + 2rem); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -234,6 +237,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb-stage { flex: 1; overflow: hidden; position: relative; touch-action: none; display: grid; place-items: center; }
 .lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
+.lb :focus-visible { outline-color: #FFFFFF; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
 .lb-ctrls { display: flex; gap: .5rem; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
@@ -293,6 +297,11 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* very large text: title on its own line, controls below, so the player stays short */
+html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; }
+html[data-env-zoom="4"] .tabs, html[data-env-zoom="5"] .tabs { padding-block: .4rem; }
+/* large text on a short screen (a phone turned sideways): the bottom bar joins the end of the page instead of covering it */
+@media (max-height: 30rem) { html[data-env-zoom="3"] .dock, html[data-env-zoom="4"] .dock, html[data-env-zoom="5"] .dock { position: static; } }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -345,7 +354,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
     <h2 class="vh">Your evening</h2>
-    <ol class="doors">
+    <ol class="doors" role="list">
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
@@ -367,7 +376,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Tonight at a glance</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li><strong>5:30 p.m.</strong> Check in, cocktails, and experiences</li>
           <li><strong>6:30 p.m.</strong> Welcome and the Spirit of Philanthropy Award</li>
           <li><strong>7:00 p.m.</strong> Dinner</li>
@@ -377,7 +386,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       </div>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li>This guide is yours to explore at your own pace. Wander through the evening in any order you like, and your place will be waiting whenever you return.</li>
           <li>Every page can be read aloud. Simply select Listen.</li>
           <li>Nothing will play until you choose, and you may pause at any time from the player at the bottom of your screen.</li>
@@ -408,7 +417,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <button data-mapmode="plan" aria-pressed="false">Map</button>
       </div>
     </div>
-    <div id="mapList"><ul class="spots" id="spotList"></ul></div>
+    <div id="mapList"><ul class="spots" role="list" id="spotList"></ul></div>
     <div id="mapPlan" hidden>
       <div class="plan" id="planGrid"></div>
     </div>
@@ -431,7 +440,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p class="jump-msg" id="jumpMsg" role="status" aria-live="polite"></p>
       </form>
       <div class="row"><button class="btn" id="playAll">Play all stories</button></div>
-      <ul class="stories" id="storyList"></ul>
+      <ul class="stories" role="list" id="storyList"></ul>
     </div>
   </section>
 
@@ -471,7 +480,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
-            <ol class="lineup">
+            <ol class="lineup" role="list">
         <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b> Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
         <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b> Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
@@ -498,7 +507,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" tabindex="0" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -524,7 +533,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
       <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
-    <ul class="videos" id="videoList"></ul>
+    <ul class="videos" role="list" id="videoList"></ul>
   </section>
 
   <!-- GIVE -->
@@ -967,7 +976,7 @@ const live = $('#live');
 /* While a dialog is open, everything behind it is inert for keyboard and screen readers */
 function syncInert(){
   const open = ['#sheetScrim', '#a11yScrim', '#lb'].some(q => !$(q).hidden);
-  ['.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
+  ['.skip', '.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
 }
 function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
 const store = {
@@ -1155,7 +1164,7 @@ function route(){
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
   if (!VIEWS.includes(view)) view = 'home';
-  closeSheet(true);
+  closeSheet(true); LB.close(true); if (!$('#a11yScrim').hidden) { $('#a11yScrim').hidden = true; syncInert(); }
   $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
   if (view === 'story') openStory(storyN);
   if (view === 'stories') renderStories();
@@ -1176,7 +1185,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b><span class="vh">, </span>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1220,7 +1229,7 @@ function closeSheet(silent){
   if (!silent && sheetReturn) sheetReturn.focus();
 }
 $('#sheetClose').onclick = () => closeSheet();
-$('#sheetScrim').addEventListener('click', e => { if (e.target.id === 'sheetScrim' || e.target.closest('a')) closeSheet(true); });
+$('#sheetScrim').addEventListener('click', e => { if (e.target.closest('a')) closeSheet(true); else if (e.target.id === 'sheetScrim') closeSheet(); });
 
 /* ============ stories ============ */
 const heard = new Set(store.get('gala-heard', []));
@@ -1228,7 +1237,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b><span class="vh">, </span>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1307,8 +1316,8 @@ const LB = (() => {
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
   function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
-  $('#lbClose').onclick = close;
+  function close(silent){ if (box.hidden) return; box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret && !silent) ret.focus(); }
+  $('#lbClose').onclick = () => close();
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbPrev').onclick = () => show(i - 1);
@@ -1339,7 +1348,7 @@ const LB = (() => {
     else if (e.key === '-') setScale(sc / 1.5);
     else if (e.key === 'Tab') trap(box, e);
   });
-  return { open };
+  return { open, close };
 })();
 document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
@@ -1441,6 +1450,20 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* skip link: focus the content without putting #main in the address (a reload then returns to this page) */
+$('.skip').addEventListener('click', e => { e.preventDefault(); $('#main').focus(); });
+
+/* measure the pinned header and bottom bar so focused items and page ends never sit underneath them */
+if ('ResizeObserver' in window) {
+  const measure = () => {
+    const top = $('.top'), dock = $('.dock');
+    root.style.setProperty('--top-h', (getComputedStyle(top).position === 'sticky' ? top.offsetHeight : 0) + 'px');
+    root.style.setProperty('--dock-h', (getComputedStyle(dock).position === 'fixed' ? dock.offsetHeight : 0) + 'px');
+    root.setAttribute('data-env-measured', '');
+  };
+  const ro = new ResizeObserver(measure); ro.observe($('.top')); ro.observe($('.dock')); addEventListener('resize', measure);
+}
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
