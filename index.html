@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>A Night For Vision</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="text-scale" content="scale">
 <meta name="description" content="Guest guide for A Night For Vision, the 2026 Envision Gala at the Wichita Art Museum.">
 <meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="data:,">
@@ -61,7 +62,7 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: var(--dock-pad, 10rem); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -70,7 +71,7 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 var(--dock-pad, 11rem); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
@@ -179,7 +180,7 @@ p { margin: 0 0 1rem; max-width: 65ch; }
 .fp-enter span::before { content: "\2191  "; content: "\2191  " / ""; }
 .r-stairs { flex-direction: row; min-height: 3.5rem; width: 100%; }
 .spots { list-style: none; margin: 0; padding: 0; display: grid; gap: .75rem; }
-.spot { width: 100%; text-align: left; display: grid; grid-template-columns: 2.25rem 1fr; gap: .75rem;
+.spot { width: 100%; text-align: left; display: grid; grid-template-columns: 2.25rem minmax(0, 1fr); gap: .75rem;
   background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1rem; cursor: pointer; }
 .spot:hover { border-color: var(--red); }
 .spot .pin { width: 2.25rem; height: 2.25rem; border-radius: 50%; background: var(--red); color: var(--on-red); display: grid; place-items: center; font-weight: 700; }
@@ -293,6 +294,12 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* Very large text on a small screen (set by fitBars in the script): the player stacks its title
+   above its buttons, and if the bars would still take too much of the screen they stop being pinned */
+html[data-dock~="stack"] .mini { grid-template-columns: minmax(0, 1fr); gap: .5rem; padding-block: .5rem; }
+html[data-dock~="stack"] .mini-ctrls { flex-wrap: wrap; }
+html[data-dock~="static"] .dock { position: static; }
+html[data-top-static] .top { position: static; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -498,7 +505,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" tabindex="0" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -986,7 +993,7 @@ const Player = (() => {
   const audio = new Audio(); audio.preload = 'auto';
   /* iOS Safari 17+: play as media so the ring/silent switch does not mute the recordings */
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch(e){}
-  let cur = null, idx = 0, pos = 0, tick = null, playing = false, token = 0, onEndCb = null, si = 0, loading = false;
+  let cur = null, idx = 0, pos = 0, tick = null, playing = false, token = 0, onEndCb = null, si = 0, loading = false, done = false;
   const rates = [1, 1.25, 1.5, 2]; let rateI = 0;
   const listeners = new Set();
   function emit(){ listeners.forEach(fn => fn({cur, idx, playing})); renderMini(); }
@@ -1035,7 +1042,7 @@ const Player = (() => {
     if (at) audio.addEventListener('loadedmetadata', () => { audio.currentTime = Math.min(at, audio.duration || at); }, { once: true });
     if (playing) audio.play().catch(() => { playing = false; emit(); });
   }
-  function finish(){ playing = false; emit(); const cb = onEndCb; if (cb) cb(cur); }
+  function finish(){ playing = false; done = true; emit(); const cb = onEndCb; if (cb) cb(cur); }
   /* Work out which sentence, and how far into it, the recording has reached. There is no word
      timing file, so position inside a sentence is estimated from its share of the characters. */
   function track(){
@@ -1064,7 +1071,7 @@ const Player = (() => {
       const sents = sentences(item.text);
       cur = { ...item, sents, segs: buildSegs(item, sents) };
       onEndCb = opts.onEnd || null;
-      idx = opts.from || 0; pos = 0; playing = true;
+      idx = opts.from || 0; pos = 0; playing = true; done = false;
       if (cur.segs && opts.delay) {
         const my = token, sg = cur.segs[0]; si = 0;
         audio.src = sg.src; audio.muted = true; loading = true;
@@ -1081,6 +1088,7 @@ const Player = (() => {
     },
     toggle(){
       if (!cur) return;
+      done = false;
       if (playing) { playing = false; stopAll(); emit(); announce('Paused'); }
       else { playing = true; if (cur.segs) { if (audio.error) { const t = audio.currentTime; loadSeg(si, t); return; } audio.play().catch(() => { playing = false; emit(); }); emit(); } else speakFrom(idx); }
     },
@@ -1098,7 +1106,7 @@ const Player = (() => {
       emit(); return rates[rateI];
     },
     close(){ stopAll(); cur = null; playing = false; onEndCb = null; emit(); announce('Player closed'); },
-    get state(){ return { cur, idx, pos, playing, loading: playing && loading, rate: rates[rateI] }; }
+    get state(){ return { cur, idx, pos, playing, done, loading: playing && loading, rate: rates[rateI] }; }
   };
 })();
 
@@ -1150,7 +1158,7 @@ const VIEWS = ['home','welcome','map','stories','story','program','watch','give'
 let currentStory = null;
 function route(){
   let h = (location.hash || '#home').slice(1);
-  if (h === 'main') return;
+  if (h === 'main') { if (routed) return; h = store.get('gala-last', 'home') || 'home'; } /* skip link: on reload, reopen the last page */
   let view = h, storyN = null;
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
@@ -1210,7 +1218,8 @@ function openSheet(id, from){
      <p class="lede">${esc(s.what)}</p>
      ${s.extra ? '<div class="row"><a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a></div>' : ''}
      <h3>How to get there</h3>${dir}`;
-  $('#sheetListen').onclick = () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
+  $('#sheetListen').dataset.name = s.name; syncListen();
+  $('#sheetListen').onclick = () => listenToggle(s.name, () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') }));
   $('#sheetScrim').hidden = false; syncInert();
   $('#sheetTitle').focus();
 }
@@ -1245,7 +1254,7 @@ function openStory(n){
   $('#storyText').innerHTML = s.text.split(/\n\n+/).map(par => '<p>' + sentences(par).map(t => `<span data-i="${gi++}">${words(t)}</span>`).join(' ') + '</p>').join('');
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
-  if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
+  if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; const lp = $('#looksPlay'); lp.dataset.label = 'Listen to the description'; lp.dataset.name = 'What ' + s.name + ' looks like'; lp.textContent = ''; syncListen(); }
   $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
@@ -1346,7 +1355,7 @@ document.addEventListener('click', e => {
   LB.open(currentStory.images || [], +z.dataset.zoom, z);
 });
 
-$('#looksPlay').onclick = () => { if (currentStory && currentStory.looks) Player.play({ name: 'What ' + currentStory.name + ' looks like', text: currentStory.looks, audio: currentStory.looksAudio || null }); };
+$('#looksPlay').onclick = () => { if (currentStory && currentStory.looks) listenToggle('What ' + currentStory.name + ' looks like', () => Player.play({ name: 'What ' + currentStory.name + ' looks like', text: currentStory.looks, audio: currentStory.looksAudio || null })); };
 
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-autoplay]'); if (!c) return;
@@ -1390,8 +1399,26 @@ document.addEventListener('click', e => {
   $$('.back, button, .todo, .vh, a', clone).forEach(n => n.remove());
   const key = scope ? scope.dataset.listenScope : sec.dataset.view;
   const name = scope ? ($('h2', scope) || $('h1', sec)).textContent : $('h1', sec).textContent;
-  Player.play({ name, text: clone.textContent.replace(/\s+/g, ' ').trim(), audio: PAGE_AUDIO[key] || null });
+  b.dataset.name = name;
+  listenToggle(name, () => Player.play({ name, text: clone.textContent.replace(/\s+/g, ' ').trim(), audio: PAGE_AUDIO[key] || null }));
 });
+
+/* A Listen button pauses and resumes its own recording (the bottom player is out of reach while a
+   dialog is open), and its label says what a tap will do: Listen, Pause, or Resume. */
+function listenToggle(name, start){
+  const st = Player.state;
+  if (st.cur && st.cur.name === name && !st.done) Player.toggle(); else start();
+}
+function syncListen(){
+  const st = Player.state;
+  $$('[data-listen], #sheetListen, #looksPlay').forEach(b => {
+    if (!b.dataset.label) b.dataset.label = b.textContent;
+    const mine = st.cur && !st.done && b.dataset.name && st.cur.name === b.dataset.name;
+    const t = mine ? b.dataset.label.replace(/^Listen( to)?/, st.playing ? 'Pause' : 'Resume') : b.dataset.label;
+    if (b.textContent !== t) b.textContent = t;
+  });
+}
+Player.on(syncListen);
 
 /* ============ dialogs: focus trap + escape ============ */
 function trap(container, e){
@@ -1442,8 +1469,26 @@ $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
 
+/* ============ pinned bars never cover the page ============ */
+/* With very large text (ours, the browser's, or the phone's own setting) on a small or sideways
+   screen, the pinned header and bottom bar could fill the screen. Stack the player, then unpin. */
+function fitBars(){
+  const dock = $('.dock'), top = $('.top'), H = innerHeight, rem = parseFloat(getComputedStyle(root).fontSize) || 16;
+  root.removeAttribute('data-dock'); root.removeAttribute('data-top-static'); root.style.removeProperty('--dock-pad');
+  const mode = [];
+  if (!$('#mini').hidden && $('.mini-title').clientWidth < rem * 6) { mode.push('stack'); root.setAttribute('data-dock', mode.join(' ')); }
+  if (dock.offsetHeight > H * 0.4) { mode.push('static'); root.setAttribute('data-dock', mode.join(' ')); root.style.setProperty('--dock-pad', '2rem'); }
+  else if (dock.offsetHeight + 1.5 * rem > 11 * rem) root.style.setProperty('--dock-pad', (dock.offsetHeight + 1.5 * rem) + 'px');
+  if (getComputedStyle(top).position === 'sticky' && top.offsetHeight > H * 0.2) root.setAttribute('data-top-static', '');
+}
+let fitQueued = false;
+const queueFit = () => { if (!fitQueued) { fitQueued = true; requestAnimationFrame(() => { fitQueued = false; fitBars(); }); } };
+addEventListener('resize', queueFit);
+if ('ResizeObserver' in window) new ResizeObserver(queueFit).observe($('.dock-in'));
+new MutationObserver(queueFit).observe(root, { attributes: true, attributeFilter: ['data-env-zoom', 'data-env-lines'] });
+
 /* ============ boot ============ */
-applyPrefs(); renderMap(); renderStories();
+applyPrefs(); renderMap(); renderStories(); fitBars();
 if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
 route();
 </script>
