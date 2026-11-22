@@ -106,10 +106,11 @@ html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="
   padding: .1rem .5rem; border-radius: 3px; }
 
 /* Type */
+/* the min() caps only bind at the two largest text sizes on phones, so page titles never split mid-word */
 h1, h2, h3 { text-wrap: balance; margin: 0; overflow-wrap: anywhere; hyphens: auto; -webkit-hyphens: auto; }
-.display { font-weight: 300; font-size: clamp(2.4rem, 1.6rem + 6vw, 3.6rem); overflow-wrap: anywhere; line-height: 1.02; letter-spacing: -.01em; }
+.display { font-weight: 300; font-size: min(clamp(2.4rem, 1.6rem + 6vw, 3.6rem), 15vw); overflow-wrap: anywhere; line-height: 1.02; letter-spacing: -.01em; }
 .display em { font-style: normal; color: var(--red-text); }
-.h1 { font-weight: 300; font-size: clamp(2rem, 1.5rem + 3vw, 2.75rem); overflow-wrap: anywhere; line-height: 1.1; }
+.h1 { font-weight: 300; font-size: min(clamp(2rem, 1.5rem + 3vw, 2.75rem), 13vw); overflow-wrap: anywhere; line-height: 1.1; }
 .h2 { font-weight: 600; font-size: 1.25rem; }
 .kicker { font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 1rem; color: var(--red-text); }
 p { margin: 0 0 1rem; max-width: 65ch; }
@@ -226,7 +227,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .gallery img { display: block; width: 100%; height: auto; border-radius: 4px; background: var(--surface); }
 .gallery figcaption { margin-top: .35rem; font-size: 1rem; }
 .zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
-.zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
+.zoom-hint { pointer-events: none; position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
 .lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; }
 .lb-top, .lb-bot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem 1rem; color: #fff; background: #000; }
 .lb-top { padding-top: calc(.6rem + env(safe-area-inset-top, 0px)); }
@@ -240,6 +241,8 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .read { font-size: 1.1875rem; line-height: 1.75; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
+/* words swap instantly: a fading word background would briefly put light text on mid grey */
+.read .w { transition: none; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
 .read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
@@ -293,6 +296,13 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* very large text: player title on its own row, buttons below, so the title is not squeezed into many lines */
+html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .5rem; }
+/* if the bottom bar would still cover too much of the screen (very large text, small or sideways phone),
+   it stops being pinned and sits at the end of the page instead, like the header does */
+html.dock-flow .dock { position: static; }
+html.dock-flow .wrap { padding-block-end: 2rem; }
+html.dock-flow { scroll-padding-bottom: 0; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -498,7 +508,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" tabindex="0" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -556,7 +566,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
 <div class="dock">
   <div class="dock-in">
     <div class="mini" id="mini" role="region" aria-label="Audio player" hidden>
-      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span id="miniSub"></span></div>
+      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span class="vh">, </span><span id="miniSub"></span></div>
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
@@ -1176,7 +1186,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b><span class="vh">, </span>${esc(s.short)}<span class="vh">.</span> <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1228,7 +1238,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b><span class="vh">, </span>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1317,7 +1327,13 @@ const LB = (() => {
     stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); sc0 = sc; }
     last = { x: e.clientX, y: e.clientY };
-    const now = Date.now(); if (now - tapT < 300) setScale(sc > 1 ? 1 : 2.5); tapT = now;
+    if (ptrs.size > 1) { tapT = 0; return; }
+    const now = Date.now();
+    if (now - tapT < 300) {
+      if (sc > 1) setScale(1);
+      else { const r = stage.getBoundingClientRect(); sc = 2.5; tx = -(e.clientX - r.left - r.width / 2) * sc; ty = -(e.clientY - r.top - r.height / 2) * sc; apply(); }
+      tapT = 0;
+    } else tapT = now;
   });
   stage.addEventListener('pointermove', e => {
     if (!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1441,6 +1457,15 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* ============ bottom bar fit ============ */
+/* Keep at least 60 percent of the screen for the page itself. Measured with the bar pinned so the check is stable. */
+function fitDock(){
+  const d = $('.dock'); root.classList.remove('dock-flow');
+  if (d.offsetHeight > innerHeight * 0.4) root.classList.add('dock-flow');
+}
+if (window.ResizeObserver) new ResizeObserver(() => fitDock()).observe($('.dock-in'));
+addEventListener('resize', fitDock);
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
