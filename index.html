@@ -292,7 +292,24 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 /* Large text, short screens: nothing sticky should eat the viewport */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
+
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* Large text: the player title takes its own line above the controls, and the bar never takes more than half the screen */
+html[data-env-zoom] .mini { display: flex; flex-wrap: wrap; }
+html[data-env-zoom] .mini-title { flex: 1 1 10rem; }
+html[data-env-zoom] .mini-ctrls { flex: 0 0 auto; }
+.dock { max-height: 50vh; max-height: 50dvh; overflow-y: auto; overscroll-behavior: contain; }
+/* Phone turned sideways: player and Home/Give share one row so the bar never covers most of the screen */
+@media (max-height: 30rem) and (min-width: 34rem) {
+  .dock-in { display: flex; flex-wrap: wrap; align-items: center; column-gap: .75rem; max-width: none; }
+  .mini, html[data-env-zoom] .mini { flex: 1 1 auto; flex-wrap: wrap; border-bottom: 0; padding-block: .3rem; }
+  .mini-title, html[data-env-zoom] .mini-title { flex: 1 1 auto; min-width: 6rem; }
+  .mini-ctrls { order: -1; }
+  .tabs { flex: 1 1 auto; }
+  .mini:not([hidden]) + .tabs { flex: 0 0 auto; grid-template-columns: auto auto; }
+  .mini:not([hidden]) + .tabs a { min-height: 44px; padding-inline: 1rem; }
+  .mini-title b, html[data-env-zoom] .mini-title b, #miniSub { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
