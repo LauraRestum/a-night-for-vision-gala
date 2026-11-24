@@ -293,6 +293,19 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
 html[data-env-zoom] .mini-title b { white-space: normal; }
+/* Large text: player title above its buttons so the bottom bar stays short. If the bar would still
+   cover too much of a small or sideways screen, it sits at the end of the page instead (like the header);
+   lock screen controls and each page's own Play button keep working. */
+html[data-env-zoom="3"] .mini, html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); gap: .4rem; padding-block: .5rem; }
+html[data-env-zoom] .mini-title b { display: inline; }
+html[data-env-zoom] .mini-title #miniSub::before { content: " \00B7  "; content: " \00B7  " / ""; }
+html[data-env-zoom] .tabs { padding-block: .4rem; }
+@media (max-height: 30rem) { .dock { position: static; } }
+@media (max-height: 48rem) { html[data-env-zoom="3"] .dock, html[data-env-zoom="4"] .dock, html[data-env-zoom="5"] .dock { position: static; } }
+/* keyboard focus and the end of the page never hide behind the bottom bar (script measures it) */
+html { scroll-padding-bottom: calc(var(--dock-h, 9rem) + 1rem); }
+.wrap { padding-block-end: max(11rem, calc(var(--dock-h, 9rem) + 2rem)); }
+html[data-dock-static] .wrap { padding-block-end: 2rem; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -560,7 +573,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
-        <button class="icon-btn" id="miniRate" aria-label="Reading speed 1 times">1&times;</button>
+        <button class="icon-btn" id="miniRate" aria-label="1&times; speed. Change reading speed">1&times;</button>
         <button class="icon-btn" id="miniClose" aria-label="Stop and close player">&times;</button>
       </div>
     </div>
@@ -1114,7 +1127,7 @@ function renderMini(){
   $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
   $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
   $('#miniRate').textContent = s.rate + '×';
-  $('#miniRate').setAttribute('aria-label', 'Reading speed ' + s.rate + ' times. Change speed');
+  $('#miniRate').setAttribute('aria-label', s.rate + '× speed. Change reading speed');
   $('#miniBack').setAttribute('aria-label', s.cur.segs ? 'Back 15 seconds' : 'Back one sentence');
 }
 $('#miniPlay').onclick = () => Player.toggle();
@@ -1150,12 +1163,12 @@ const VIEWS = ['home','welcome','map','stories','story','program','watch','give'
 let currentStory = null;
 function route(){
   let h = (location.hash || '#home').slice(1);
-  if (h === 'main') return;
+  if (h === 'main') { if (routed) return; h = store.get('gala-last', 'home') || 'home'; }
   let view = h, storyN = null;
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
   if (!VIEWS.includes(view)) view = 'home';
-  closeSheet(true);
+  closeSheet(true); closeA11y(true); LB.close(true); /* Back gesture or button while a dialog is open */
   $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
   if (view === 'story') openStory(storyN);
   if (view === 'stories') renderStories();
@@ -1170,6 +1183,8 @@ function route(){
 }
 let routed = false;
 window.addEventListener('hashchange', route);
+/* Skip link: move focus to this page's heading without replacing the address (keeps the guest's place on reload) */
+$('.skip').addEventListener('click', e => { e.preventDefault(); const h1 = $('h1', $('[data-view]:not([hidden])')) || $('#main'); h1.focus(); });
 
 /* ============ map ============ */
 let floor = 'all', mapMode = 'list';
@@ -1307,8 +1322,8 @@ const LB = (() => {
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
   function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
-  $('#lbClose').onclick = close;
+  function close(silent){ if (box.hidden) return; box.hidden = true; syncInert(); document.body.style.overflow = ''; if (!silent && ret) ret.focus(); }
+  $('#lbClose').onclick = () => close();
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbPrev').onclick = () => show(i - 1);
@@ -1339,7 +1354,7 @@ const LB = (() => {
     else if (e.key === '-') setScale(sc / 1.5);
     else if (e.key === 'Tab') trap(box, e);
   });
-  return { open };
+  return { open, close };
 })();
 document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
@@ -1419,10 +1434,11 @@ function applyPrefs(){
   const z = +(prefs.zoom || 1);
   $('#textUp').setAttribute('aria-disabled', String(z >= 5));
   $('#textDown').setAttribute('aria-disabled', String(z <= 1));
+  syncDock();
 }
 let a11yReturn = null;
 function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; syncInert(); $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
-function closeA11y(){ $('#a11yScrim').hidden = true; syncInert(); if (a11yReturn) a11yReturn.focus(); }
+function closeA11y(silent){ if ($('#a11yScrim').hidden) return; $('#a11yScrim').hidden = true; syncInert(); if (!silent && a11yReturn) a11yReturn.focus(); }
 $('#a11yOpen').onclick = openA11y;
 $('#a11yScrim').addEventListener('click', e => {
   const set = e.target.closest('[data-set]'), tog = e.target.closest('[data-toggle]');
@@ -1443,7 +1459,15 @@ $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
 
 /* ============ boot ============ */
-applyPrefs(); renderMap(); renderStories();
+const dockEl = $('.dock');
+function syncDock(){
+  const fixed = getComputedStyle(dockEl).position === 'fixed';
+  root.style.setProperty('--dock-h', fixed ? dockEl.offsetHeight + 'px' : '0px');
+  root.toggleAttribute('data-dock-static', !fixed);
+}
+if ('ResizeObserver' in window) new ResizeObserver(syncDock).observe(dockEl);
+addEventListener('resize', syncDock);
+applyPrefs(); renderMap(); renderStories(); syncDock();
 if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
 route();
 </script>
