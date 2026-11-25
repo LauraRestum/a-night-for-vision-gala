@@ -61,7 +61,7 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: calc(var(--dock-h, 9rem) + 1rem); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -269,10 +269,13 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 100; background: var(--stage); border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom, 0px); }
 .dock-in { max-width: 40rem; margin: 0 auto; padding-inline: 1rem; }
-.mini { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
-.mini-title { min-width: 0; }
-.mini-title b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.mini-ctrls { display: flex; gap: .4rem; }
+.mini { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem .75rem; align-items: center; padding-block: .75rem; border-bottom: 1px solid var(--line); }
+.mini-title { min-width: 0; flex: 1 1 5rem; }
+.mini-title b { display: block; overflow-wrap: break-word; }
+.mini-ctrls { display: flex; gap: .4rem; margin-left: auto; }
+/* large text on a small screen: if the bar would cover too much of the page, it sits at the end of the page instead of floating over it */
+.dock.flow { position: static; }
+html[data-dock="flow"] .wrap { padding-block-end: 2rem; }
 .icon-btn { min-width: 44px; min-height: 44px; border-radius: 50%; border: 1px solid var(--ctl); background: transparent; cursor: pointer; font-weight: 700; display: grid; place-items: center; }
 .icon-btn.main { background: var(--red); border-color: var(--red); color: var(--on-red); }
 .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
@@ -292,7 +295,6 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 /* Large text, short screens: nothing sticky should eat the viewport */
 html[data-env-zoom="3"] .top, html[data-env-zoom="4"] .top, html[data-env-zoom="5"] .top { position: static; }
 @media (max-height: 30rem) { .top { position: static; } .tabs { padding-block: .3rem; } }
-html[data-env-zoom] .mini-title b { white-space: normal; }
 html[data-env-zoom] .door, html[data-env-zoom] .story-card, html[data-env-zoom] .spot { overflow-wrap: anywhere; }
 .seg button, .btn, .pill { overflow-wrap: anywhere; }
 .stack, .videos, .tips, .spots, .stories, .view-head, .hero, .looks { grid-template-columns: minmax(0, 1fr); }
@@ -1259,7 +1261,16 @@ function syncStory(){
   if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
   const now = sentNow;
-  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
+  if (now && st.playing) {
+    /* keep the sentence being read in the clear space between the header and the bottom bar */
+    const r = now.getBoundingClientRect(), top = $('.top'), dock = $('.dock');
+    const topH = getComputedStyle(top).position === 'static' ? 0 : top.getBoundingClientRect().bottom;
+    const dockH = dock.classList.contains('flow') ? 0 : dock.offsetHeight, room = innerHeight - topH - dockH;
+    if (r.top < topH + 8 || r.bottom > innerHeight - dockH - 8) {
+      const by = r.top - topH - Math.max(8, (room - r.height) / 3);
+      window.scrollBy({ top: by, behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' });
+    }
+  }
 }
 Player.on(syncStory);
 function playStory(s, chain){
@@ -1307,7 +1318,7 @@ const LB = (() => {
     announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
   function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
+  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; const back = ret && ret.isConnected ? ret : $('h1', $('[data-view]:not([hidden])')); if (back) back.focus(); }
   $('#lbClose').onclick = close;
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
@@ -1441,6 +1452,20 @@ function stepZoom(d){
 $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
+
+/* ============ bottom bar fit ============ */
+/* Keep focused items and the reading position clear of the bar, and stop the bar covering the page at large text sizes */
+(() => {
+  const dock = $('.dock');
+  const fit = () => {
+    const h = dock.offsetHeight, flow = h > innerHeight * 0.4;
+    dock.classList.toggle('flow', flow);
+    flow ? root.setAttribute('data-dock', 'flow') : root.removeAttribute('data-dock');
+    root.style.setProperty('--dock-h', (flow ? 0 : h) + 'px');
+  };
+  if ('ResizeObserver' in window) new ResizeObserver(fit).observe(dock);
+  addEventListener('resize', fit); fit();
+})();
 
 /* ============ boot ============ */
 applyPrefs(); renderMap(); renderStories();
