@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Guest guide for A Night For Vision, the 2026 Envision Gala at the Wichita Art Museum.">
 <meta name="theme-color" content="#0A0A0A">
+<meta name="text-scale" content="scale">
 <link rel="icon" href="data:,">
 <style>html{-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -61,7 +62,7 @@ html[data-env-lines="wide"] .read { line-height: 2.1; }
 html[data-env-lines="wide"] .read span.now { line-height: 1.7; }
 html[data-env-underline="on"] a { text-decoration: underline !important; }
 
-html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: 10rem; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 6rem; scroll-padding-bottom: max(10rem, calc(var(--dock-h, 0px) + 1rem)); }
 * { box-sizing: border-box; }
 button, a, input, summary { touch-action: manipulation; } /* no double-tap page zoom on controls */
 [hidden] { display: none !important; }
@@ -70,7 +71,7 @@ body {
   font-family: var(--font); font-size: 1.0625rem; line-height: 1.6; font-weight: 400;
   -webkit-font-smoothing: antialiased;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 11rem; }
+.wrap { max-width: 40rem; margin: 0 auto; padding-inline: 1.25rem; padding-block: 0 max(11rem, calc(var(--dock-h, 0px) + 2rem)); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
@@ -226,7 +227,7 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .gallery img { display: block; width: 100%; height: auto; border-radius: 4px; background: var(--surface); }
 .gallery figcaption { margin-top: .35rem; font-size: 1rem; }
 .zoomable { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; position: relative; border-radius: 4px; }
-.zoom-hint { position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
+.zoom-hint { pointer-events: none; position: absolute; right: .4rem; bottom: .4rem; background: rgba(0,0,0,.75); color: #fff; font-size: 1rem; font-weight: 600; padding: .2rem .5rem; border-radius: 999px; }
 .lb { position: fixed; inset: 0; z-index: 400; background: #000; display: flex; flex-direction: column; }
 .lb-top, .lb-bot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem 1rem; color: #fff; background: #000; }
 .lb-top { padding-top: calc(.6rem + env(safe-area-inset-top, 0px)); }
@@ -235,12 +236,17 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .lb-stage img { max-width: 100%; max-height: 100%; transform-origin: center center; user-select: none; -webkit-user-drag: none; cursor: grab; }
 .lb button { min-width: 48px; min-height: 48px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: transparent; color: #fff; font-size: 1.25rem; font-weight: 700; cursor: pointer; }
 .lb-cap { flex: 1; min-width: 0; font-size: 1rem; }
+/* the photo viewer is always black: keep its focus ring white in every theme (Light uses a black ring) */
+.lb :focus-visible { outline-color: #FFFFFF; }
+html[data-env-theme="hc"] .lb :focus-visible { outline-color: #FFD400; }
 .lb-ctrls { display: flex; gap: .5rem; }
 .story-card .thumb { width: 3rem; height: 3rem; border-radius: 50%; object-fit: cover; object-position: top; display: block; }
 .read { font-size: 1.1875rem; line-height: 1.75; }
 .read span { border-radius: 3px; transition: background .2s; }
 .read span { transition: font-size .25s ease, background .2s; }
 .read span.now { background: var(--hl); box-shadow: 0 0 0 3px var(--hl); font-size: 1.4em; font-weight: 600; line-height: 1.45; }
+/* words switch highlight instantly: a fading background left dark text on dark for a moment */
+.read .w { transition: none; }
 .read .w.cur { font-size: 1.2em; font-weight: 700; background: var(--ink); color: var(--stage); border-radius: 4px; padding: 0 .2em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .player-big { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-block: 1rem 1.5rem; }
 
@@ -280,6 +286,15 @@ html[data-env-zoom="4"] .story-card > :first-child, html[data-env-zoom="5"] .sto
 .tabs a { min-height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-weight: 700; text-decoration: none; border: 1px solid var(--line); }
 .tabs a.give { background: var(--red); border-color: var(--red); color: var(--on-red); }
 .tabs a[aria-current="page"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Large text on small or sideways screens: if the bottom bar would cover more than 40% of the
+   screen, it stops floating and sits at the end of the page instead (set by fitDock in the script) */
+html.dock-static .dock { position: static; }
+html.dock-static .wrap { padding-block-end: 2rem; }
+html.dock-static { scroll-padding-bottom: 1rem; }
+/* very large text: player title on its own line, buttons below */
+html[data-env-zoom="4"] .mini, html[data-env-zoom="5"] .mini { grid-template-columns: minmax(0, 1fr); }
+html[data-env-zoom="4"] .mini-ctrls, html[data-env-zoom="5"] .mini-ctrls { flex-wrap: wrap; }
 
 /* Accessibility dialog */
 .a11y-scrim { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.65); display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -345,7 +360,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p class="presented">Presented by HighTouch Technologies</p>
     </div>
     <h2 class="vh">Your evening</h2>
-    <ol class="doors">
+    <ol class="doors" role="list">
       <li><a class="door" href="#welcome"><span class="n" aria-hidden="true">1</span><span><span class="t">Welcome</span> <span class="d">How tonight works and how to use this guide</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#map"><span class="n" aria-hidden="true">2</span><span><span class="t">Explore the Museum</span> <span class="d">Find the Meta glasses, tactile art, live music, and photo booth</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
       <li><a class="door" href="#stories"><span class="n" aria-hidden="true">3</span><span><span class="t">Through My Eyes</span> <span class="d">Listen to real stories from Envision program participants</span></span><span class="go" aria-hidden="true">&rarr;</span></a></li>
@@ -367,7 +382,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <p>We are honored to have you with us at the Wichita Art Museum. Tonight, we celebrate the future of Envision, and the remarkable people who are bringing it to life.</p>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Tonight at a glance</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li><strong>5:30 p.m.</strong> Check in, cocktails, and experiences</li>
           <li><strong>6:30 p.m.</strong> Welcome and the Spirit of Philanthropy Award</li>
           <li><strong>7:00 p.m.</strong> Dinner</li>
@@ -377,7 +392,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       </div>
       <div class="panel">
         <h2 class="h2" style="margin-bottom:.75rem">Using this guide</h2>
-        <ul class="tips">
+        <ul class="tips" role="list">
           <li>This guide is yours to explore at your own pace. Wander through the evening in any order you like, and your place will be waiting whenever you return.</li>
           <li>Every page can be read aloud. Simply select Listen.</li>
           <li>Nothing will play until you choose, and you may pause at any time from the player at the bottom of your screen.</li>
@@ -408,7 +423,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <button data-mapmode="plan" aria-pressed="false">Map</button>
       </div>
     </div>
-    <div id="mapList"><ul class="spots" id="spotList"></ul></div>
+    <div id="mapList"><ul class="spots" id="spotList" role="list"></ul></div>
     <div id="mapPlan" hidden>
       <div class="plan" id="planGrid"></div>
     </div>
@@ -431,7 +446,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p class="jump-msg" id="jumpMsg" role="status" aria-live="polite"></p>
       </form>
       <div class="row"><button class="btn" id="playAll">Play all stories</button></div>
-      <ul class="stories" id="storyList"></ul>
+      <ul class="stories" id="storyList" role="list"></ul>
     </div>
   </section>
 
@@ -471,18 +486,18 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
     <div role="tabpanel" id="pane-evening" aria-labelledby="tab-evening" data-listen-scope="evening">
       <h2 class="vh">Tonight's Program</h2>
       <button class="btn" data-listen="evening" style="margin-bottom:1.25rem">Listen to tonight's program</button>
-            <ol class="lineup">
+            <ol class="lineup" role="list">
         <li><b>5:30 p.m. &middot; Registration, Cocktails, and Experiences</b> Visit the Meta glasses and tactile art in the Beren Room, live music and Through My Eyes in the Rotunda, and the photo booth in the Upper Gallery, with premier cocktails and refreshments at open bars in the Beren Room and the Upper Gallery. <a href="#map">Explore the Museum</a></li>
         <li><b>6:30 p.m. &middot; Welcome, Invocation, and Purpose of the Night</b> Michael Monteferrante, President and CEO, and Molly Edwards-Workman, Senior Vice President, Foundation and Mission Services. Invocation by Rev. Dr. Robin McGonigle.</li>
         <li><b>National Anthem</b> Performed by Hashim Sayed. <a href="#story3">Read Hashim&rsquo;s story</a></li>
         <li><b>Spirit of Philanthropy Award</b> Presented to 6 Meridian</li>
-        <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#" data-tab="tab-menu">See the menu</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch">Watch with audio description<span class="vh">: Program Legacy</span></a></li>
+        <li><b>7:00 p.m. &middot; Dinner</b> Served by Scotch &amp; Sirloin. <a href="#program" data-tab="tab-menu">See the menu</a></li>
+        <li class="video"><span class="vh">Video. </span><b>Program Legacy</b> A video with Aubree, Hashim, and Stephen. <a href="#watch" data-video="Program Legacy">About this video<span class="vh">: Program Legacy</span></a></li>
         <li><b>7:30 p.m. &middot; Fund-A-Need</b> Hosted by Charlie Moon, with four stories shared along the way. <a href="#give">How to give</a></li>
-        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch">Watch with audio description<span class="vh">: Water Street</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch">Watch with audio description<span class="vh">: Heather's Camp</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch">Watch with audio description<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
-        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch">Watch with audio description<span class="vh">: Level Up</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Water Street</b> <a href="#watch" data-video="Water Street">About this video<span class="vh">: Water Street</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Heather's Camp</b> <a href="#watch" data-video="Heather's Camp">About this video<span class="vh">: Heather's Camp</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Cathy G. Hudson Envision Child Development Center</b> <a href="#watch" data-video="Cathy G. Hudson Envision Child Development Center">About this video<span class="vh">: Cathy G. Hudson Envision Child Development Center</span></a></li>
+        <li class="video"><span class="vh">Video. </span><b>Level Up</b> <a href="#watch" data-video="Level Up">About this video<span class="vh">: Level Up</span></a></li>
         <li><b>Chance Drawing Winner</b> Announced at the close of Fund-A-Need</li>
         <li><b>8:30 p.m. &middot; Program Ends</b> Thank you for joining us.</li>
       </ol>
@@ -498,7 +513,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
         <p><em>Dinner by Scotch &amp; Sirloin. Refreshments by Blue Moon.</em></p>
       </div>
     </div>
-    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" hidden>
+    <div role="tabpanel" id="pane-book" aria-labelledby="tab-book" tabindex="0" hidden>
       <div class="stack">
         <section aria-labelledby="h-sponsors">
           <h2 class="h2" id="h-sponsors">Thank you to our sponsors</h2>
@@ -524,7 +539,7 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
       <h1 class="h1" id="h-watch" tabindex="-1">Watch the Stories</h1>
       <p>Tonight's five videos, in the order they play. Audio described versions are linked below as they become available.</p>
     </div>
-    <ul class="videos" id="videoList"></ul>
+    <ul class="videos" id="videoList" role="list"></ul>
   </section>
 
   <!-- GIVE -->
@@ -556,11 +571,11 @@ html[data-env-motion="reduce"] *, html[data-env-motion="reduce"] *::before, html
 <div class="dock">
   <div class="dock-in">
     <div class="mini" id="mini" role="region" aria-label="Audio player" hidden>
-      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span id="miniSub"></span></div>
+      <div class="mini-title"><span class="vh">Now playing:</span><b id="miniTitle"></b><span class="vh">. </span><span id="miniSub"></span></div>
       <div class="mini-ctrls">
         <button class="icon-btn" id="miniBack" aria-label="Back one sentence"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 6v12L2 12zM22 6v12l-9-6z"/></svg></button>
         <button class="icon-btn main" id="miniPlay" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true" id="miniIcon"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
-        <button class="icon-btn" id="miniRate" aria-label="Reading speed 1 times">1&times;</button>
+        <button class="icon-btn" id="miniRate" aria-label="1&times; reading speed. Change speed">1&times;</button>
         <button class="icon-btn" id="miniClose" aria-label="Stop and close player">&times;</button>
       </div>
     </div>
@@ -967,7 +982,7 @@ const live = $('#live');
 /* While a dialog is open, everything behind it is inert for keyboard and screen readers */
 function syncInert(){
   const open = ['#sheetScrim', '#a11yScrim', '#lb'].some(q => !$(q).hidden);
-  ['.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
+  ['.skip', '.top', '#main', '.dock'].forEach(q => $(q).toggleAttribute('inert', open));
 }
 function announce(msg){ live.textContent = ''; setTimeout(()=>{ live.textContent = msg; }, 60); }
 const store = {
@@ -1107,15 +1122,16 @@ function renderMini(){
   const s = Player.state, mini = $('#mini');
   const sig = s.cur ? [s.cur.name, s.loading, s.playing, s.rate, !!s.cur.segs].join('|') : '';
   if (sig === renderMini.last) return; renderMini.last = sig;
-  if (!s.cur) { mini.hidden = true; return; }
-  mini.hidden = false;
+  if (!s.cur) { mini.hidden = true; fitDock(); return; }
+  const wasHidden = mini.hidden; mini.hidden = false;
   $('#miniTitle').textContent = s.cur.name;
   $('#miniSub').textContent = s.loading ? 'Loading' : s.playing ? 'Playing' : 'Paused';
   $('#miniIcon').innerHTML = s.playing ? PAUSE_SVG : PLAY_SVG;
   $('#miniPlay').setAttribute('aria-label', s.playing ? 'Pause' : 'Play');
   $('#miniRate').textContent = s.rate + '×';
-  $('#miniRate').setAttribute('aria-label', 'Reading speed ' + s.rate + ' times. Change speed');
+  $('#miniRate').setAttribute('aria-label', s.rate + '× reading speed. Change speed');
   $('#miniBack').setAttribute('aria-label', s.cur.segs ? 'Back 15 seconds' : 'Back one sentence');
+  if (wasHidden) fitDock();
 }
 $('#miniPlay').onclick = () => Player.toggle();
 $('#miniBack').onclick = () => Player.back();
@@ -1155,7 +1171,7 @@ function route(){
   const m = h.match(/^story(\d+)$/);
   if (m) { view = 'story'; storyN = +m[1]; }
   if (!VIEWS.includes(view)) view = 'home';
-  closeSheet(true);
+  closeSheet(true); if (!$('#a11yScrim').hidden) closeA11y(true); LB.close(true);
   $$('[data-view]').forEach(s => s.hidden = s.dataset.view !== view);
   if (view === 'story') openStory(storyN);
   if (view === 'stories') renderStories();
@@ -1176,7 +1192,7 @@ let floor = 'all', mapMode = 'list';
 function spotsShown(){ return SPOTS.slice().sort((x, y) => x.n - y.n); }
 function renderMap(){
   $('#spotList').innerHTML = spotsShown().map(s =>
-    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b>${esc(s.short)} <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
+    `<li><button class="spot" data-spot="${s.id}"><span class="pin" aria-hidden="true">${s.n}</span><span><b>${esc(s.name)}</b><span class="vh">. </span>${esc(s.short)}<span class="vh">.</span> <span class="when">${esc(s.when || '')}</span></span></button></li>`).join('');
   const shown = spotsShown();
   const by = id => SPOTS.find(x => x.id === id);
   const room = (id, cls) => { const r = by(id); return `<button class="room ${cls}" data-spot="${r.id}"><span class="pin" aria-hidden="true">${r.n}</span><b>${esc(r.name)}</b></button>`; };
@@ -1210,7 +1226,7 @@ function openSheet(id, from){
      <p class="lede">${esc(s.what)}</p>
      ${s.extra ? '<div class="row"><a class="btn ghost" href="#stories">Hear Through My Eyes</a><a class="btn ghost" href="#story7">Read Luke&rsquo;s story</a></div>' : ''}
      <h3>How to get there</h3>${dir}`;
-  $('#sheetListen').onclick = () => Player.play({ name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
+  $('#sheetListen').onclick = e => listen(e.currentTarget, { name: s.name, audio: s.audio || null, text: s.name + '. ' + s.what + (s.directions ? ' How to get there. ' + s.directions.join(' ') : '') });
   $('#sheetScrim').hidden = false; syncInert();
   $('#sheetTitle').focus();
 }
@@ -1220,7 +1236,7 @@ function closeSheet(silent){
   if (!silent && sheetReturn) sheetReturn.focus();
 }
 $('#sheetClose').onclick = () => closeSheet();
-$('#sheetScrim').addEventListener('click', e => { if (e.target.id === 'sheetScrim' || e.target.closest('a')) closeSheet(true); });
+$('#sheetScrim').addEventListener('click', e => { if (e.target.id === 'sheetScrim') closeSheet(); else if (e.target.closest('a')) closeSheet(true); });
 
 /* ============ stories ============ */
 const heard = new Set(store.get('gala-heard', []));
@@ -1228,7 +1244,7 @@ function markHeard(n){ heard.add(n); store.set('gala-heard', [...heard]); }
 function renderStories(){
   $('#storyList').innerHTML = STORIES.map(s =>
     `<li><a class="story-card" href="#story${s.n}" data-autoplay="${s.n}">${s.images ? `<img class="thumb" src="${s.images[0].src}" alt="">` : `<span class="num" aria-hidden="true">i</span>`}
-      <span><b>${esc(s.name)}</b>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
+      <span><b>${esc(s.name)}</b><span class="vh">. </span>${esc(s.hook)}${heard.has(s.n) ? '<span class="heard"> &middot; Heard</span>' : ''}<span class="audio-tag" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4zM16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio</span></span>
       <span class="vh">. ${s.looks ? 'Opens the story and plays a description of ' + esc(s.name) + '.' : 'Opens the story.'}</span><span aria-hidden="true">&rarr;</span></a></li>`).join('');
 }
 function words(t){
@@ -1246,7 +1262,8 @@ function openStory(n){
   const nt = $('#storyNote'); nt.hidden = !s.note; nt.textContent = s.note || '';
   const lk = $('#storyLooks'); lk.hidden = !s.looks;
   if (s.looks) { $('#looksH').textContent = 'What ' + s.name + ' looks like'; $('#looksP').textContent = s.looks; $('#looksPlay').textContent = 'Listen to the description'; }
-  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Tap to enlarge: ${esc(im.alt)}"><img src="${im.src}" alt="${esc(im.alt)}" loading="lazy"><span class="zoom-hint" aria-hidden="true">Tap to enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
+  $('#looksPlay').removeAttribute('data-orig');
+  $('#storyPics').innerHTML = (s.images || []).map((im, k) => `<figure><button class="zoomable" data-zoom="${k}" aria-label="Enlarge photo: ${esc(im.alt)}"><img src="${im.src}" alt="" loading="lazy"><span class="zoom-hint" aria-hidden="true">Enlarge</span></button>${im.cap ? `<figcaption>${esc(im.cap)}</figcaption>` : ''}</figure>`).join('');
   syncStory();
   const next = STORIES[STORIES.indexOf(s) + 1];
   $('#storyNext').hidden = !next;
@@ -1259,7 +1276,7 @@ function syncStory(){
   if (sentNow) { let cw = null; for (const w of sentNow.children) { if (+w.dataset.s <= st.pos) cw = w; else break; } if (cw) cw.classList.add('cur'); }
   $('#storyPlay').textContent = mine && st.playing ? 'Pause' : (mine && st.idx > 0 ? 'Resume' : 'Play');
   const now = sentNow;
-  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - 180) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
+  if (now && st.playing) { const r = now.getBoundingClientRect(); if (r.top < 80 || r.bottom > innerHeight - Math.max(180, (parseFloat(root.style.getPropertyValue('--dock-h')) || 0) + 24)) now.scrollIntoView({ block: 'center', behavior: (matchMedia('(prefers-reduced-motion: reduce)').matches || root.getAttribute('data-env-motion') === 'reduce') ? 'auto' : 'smooth' }); }
 }
 Player.on(syncStory);
 function playStory(s, chain){
@@ -1299,16 +1316,22 @@ const LB = (() => {
     img.style.transform = `translate(${tx}px, ${ty}px) scale(${sc})`;
   }
   function setScale(v){ sc = Math.min(5, Math.max(1, v)); if (sc === 1) { tx = 0; ty = 0; } apply(); }
-  function show(k){
+  function show(k, quiet){
     i = (k + list.length) % list.length; const im = list[i];
-    img.src = im.src; img.alt = im.alt; sc = 1; tx = 0; ty = 0; apply();
+    img.src = im.src; sc = 1; tx = 0; ty = 0; apply(); /* alt stays empty: the caption names the photo and labels the dialog, so it is read once */
     $('#lbCap').textContent = im.alt + (im.cap ? '. ' + im.cap : '');
     $('#lbCount').textContent = (i + 1) + ' of ' + list.length;
-    announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
+    if (!quiet) announce('Photo ' + (i + 1) + ' of ' + list.length + ': ' + im.alt);
   }
-  function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k); $('#lbClose').focus(); }
-  function close(){ box.hidden = true; syncInert(); document.body.style.overflow = ''; if (ret) ret.focus(); }
-  $('#lbClose').onclick = close;
+  function open(images, k, from){ list = images; ret = from; box.hidden = false; syncInert(); document.body.style.overflow = 'hidden'; show(k, true); $('#lbClose').focus(); }
+  function close(silent){
+    if (box.hidden) return;
+    box.hidden = true; syncInert(); document.body.style.overflow = '';
+    if (silent) return;
+    const back = ret && ret.isConnected ? ret : $('h1', $('[data-view]:not([hidden])'));
+    if (back) back.focus();
+  }
+  $('#lbClose').onclick = () => close();
   $('#lbIn').onclick = () => { setScale(sc * 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbOut').onclick = () => { setScale(sc / 1.5); announce('Zoom ' + Math.round(sc * 100) + ' percent'); };
   $('#lbPrev').onclick = () => show(i - 1);
@@ -1317,7 +1340,14 @@ const LB = (() => {
     stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); sc0 = sc; }
     last = { x: e.clientX, y: e.clientY };
-    const now = Date.now(); if (now - tapT < 300) setScale(sc > 1 ? 1 : 2.5); tapT = now;
+    /* double tap zooms in on the spot tapped (a one-finger alternative to dragging); a pinch is not a tap */
+    const now = Date.now();
+    if (ptrs.size > 1) tapT = 0;
+    else if (now - tapT < 300) {
+      tapT = 0;
+      if (sc > 1) setScale(1);
+      else { const r = stage.getBoundingClientRect(), z = 2.5; sc = z; tx = (r.left + r.width / 2 - e.clientX) * (z - 1); ty = (r.top + r.height / 2 - e.clientY) * (z - 1); apply(); }
+    } else tapT = now;
   });
   stage.addEventListener('pointermove', e => {
     if (!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -1339,14 +1369,14 @@ const LB = (() => {
     else if (e.key === '-') setScale(sc / 1.5);
     else if (e.key === 'Tab') trap(box, e);
   });
-  return { open };
+  return { open, close };
 })();
 document.addEventListener('click', e => {
   const z = e.target.closest('[data-zoom]'); if (!z || !currentStory) return;
   LB.open(currentStory.images || [], +z.dataset.zoom, z);
 });
 
-$('#looksPlay').onclick = () => { if (currentStory && currentStory.looks) Player.play({ name: 'What ' + currentStory.name + ' looks like', text: currentStory.looks, audio: currentStory.looksAudio || null }); };
+$('#looksPlay').onclick = e => { if (currentStory && currentStory.looks) listen(e.currentTarget, { name: 'What ' + currentStory.name + ' looks like', text: currentStory.looks, audio: currentStory.looksAudio || null }); };
 
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-autoplay]'); if (!c) return;
@@ -1375,7 +1405,7 @@ $('#videoList').innerHTML = VIDEOS.map((v, i) =>
     <div class="meta"><span>Plays ${['first','second','third','fourth','fifth'][i]} tonight</span><span>${esc(v.len)}</span>${v.ad ? '<span class="badge"><span aria-hidden="true">AD</span><span class="vh">Audio described</span></span>' : ''}</div>
     <p style="margin:0">${esc(v.who)}</p>
     ${v.ad ? `<a class="btn" href="${esc(v.ad)}" target="_blank" rel="noopener">Watch ${esc(v.title)} with audio description<span class="vh"> (opens in a new tab)</span></a>`
-           : ''}
+           : '<p style="margin:0">The audio described version will be linked here when it is ready.</p>'}
     <a class="btn ghost" href="#give">Support this work<span class="vh">: ${esc(v.title)}</span></a></li>`).join('');
 
 /* ============ give ============ */
@@ -1390,7 +1420,7 @@ document.addEventListener('click', e => {
   $$('.back, button, .todo, .vh, a', clone).forEach(n => n.remove());
   const key = scope ? scope.dataset.listenScope : sec.dataset.view;
   const name = scope ? ($('h2', scope) || $('h1', sec)).textContent : $('h1', sec).textContent;
-  Player.play({ name, text: clone.textContent.replace(/\s+/g, ' ').trim(), audio: PAGE_AUDIO[key] || null });
+  listen(b, { name, text: clone.textContent.replace(/\s+/g, ' ').trim(), audio: PAGE_AUDIO[key] || null });
 });
 
 /* ============ dialogs: focus trap + escape ============ */
@@ -1419,10 +1449,11 @@ function applyPrefs(){
   const z = +(prefs.zoom || 1);
   $('#textUp').setAttribute('aria-disabled', String(z >= 5));
   $('#textDown').setAttribute('aria-disabled', String(z <= 1));
+  if (typeof fitDock === 'function') fitDock();
 }
 let a11yReturn = null;
 function openA11y(){ a11yReturn = document.activeElement; $('#a11yScrim').hidden = false; syncInert(); $('#a11yTitle').setAttribute('tabindex','-1'); $('#a11yTitle').focus(); }
-function closeA11y(){ $('#a11yScrim').hidden = true; syncInert(); if (a11yReturn) a11yReturn.focus(); }
+function closeA11y(silent){ $('#a11yScrim').hidden = true; syncInert(); if (!silent && a11yReturn) a11yReturn.focus(); }
 $('#a11yOpen').onclick = openA11y;
 $('#a11yScrim').addEventListener('click', e => {
   const set = e.target.closest('[data-set]'), tog = e.target.closest('[data-toggle]');
@@ -1442,8 +1473,51 @@ $('#textUp').onclick = () => stepZoom(1);
 $('#textDown').onclick = () => stepZoom(-1);
 $('#a11yReset').onclick = () => { prefs = {}; store.set(A_KEY, prefs); applyPrefs(); announce('Settings reset'); };
 
+/* ============ listen buttons: same button pauses and resumes ============ */
+function listen(btn, item){
+  const st = Player.state;
+  if (st.cur && st.cur.name === item.name) { Player.toggle(); return; }
+  if (!btn.dataset.orig) btn.dataset.orig = btn.textContent;
+  btn.dataset.plays = item.name;
+  Player.play(item);
+}
+Player.on(() => {
+  const st = Player.state;
+  $$('[data-plays]').forEach(b => {
+    const mine = st.cur && st.cur.name === b.dataset.plays;
+    b.textContent = mine ? (st.playing ? 'Pause' : 'Resume') : (b.dataset.orig || b.textContent);
+    if (!mine && b.dataset.orig) b.removeAttribute('data-plays');
+  });
+});
+
+/* ============ skip link: move focus to the page heading without changing the address ============ */
+$('.skip').addEventListener('click', e => {
+  e.preventDefault();
+  const h = $('h1', $('[data-view]:not([hidden])')) || $('#main');
+  h.focus();
+});
+
+/* ============ program: only promise audio description where a described video is linked ============ */
+$$('.lineup a[data-video]').forEach(a => {
+  const v = VIDEOS.find(x => x.title === a.dataset.video);
+  if (v && v.ad) a.firstChild.textContent = 'Watch with audio description';
+});
+
+/* ============ bottom bar: never cover more than 40% of the screen ============ */
+function fitDock(){
+  const dock = $('.dock');
+  root.classList.remove('dock-static');
+  const h = dock.offsetHeight;
+  const pin = h <= innerHeight * 0.4;
+  root.classList.toggle('dock-static', !pin);
+  root.style.setProperty('--dock-h', (pin ? h : 0) + 'px');
+}
+addEventListener('resize', () => requestAnimationFrame(fitDock));
+addEventListener('orientationchange', () => setTimeout(fitDock, 300));
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitDock);
+
 /* ============ boot ============ */
-applyPrefs(); renderMap(); renderStories();
+applyPrefs(); renderMap(); renderStories(); fitDock();
 if (!location.hash) { const last = store.get('gala-last', null); if (last && last !== 'home') history.replaceState(null, '', '#' + last); }
 route();
 </script>
